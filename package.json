@@ -1,5 +1,5 @@
 {
-	"name": "capstone-redemption-public",
+	"name": "new-bbms-public",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -15,6 +15,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-vercel": "^5.4.3",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/better-sqlite3": "^7.6.11",
