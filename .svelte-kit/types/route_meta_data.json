@@ -1,0 +1,8 @@
+{
+	"/": [],
+	"/appointments": [
+		"src/routes/appointments/+page.js"
+	],
+	"/appointments/booking": [],
+	"/appointments/view": []
+}
