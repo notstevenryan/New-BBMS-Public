@@ -1,18 +1,23 @@
-<<<<<<< HEAD
 # New-BBMS-Public
 Blood Bank Management System - Public Domain
 
 Table of Contents
+=====================
+- News (Coming Soon...)
 
-News (Coming Soon...)
+- Appointment System (Coming Soon...)
 
-Appointment System (Coming Soon...)
+- Bloodbank Locator
 
-Bloodbank Locator
+- Check your donation history (Comming Soon...)
 
-Check your donation history (Comming Soon...)
+Known Issues
+=====================
+- (Listed 2024/9/12) Locations listed twice in map, will fix soon 
 
-=======
+
+
+=====================
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
