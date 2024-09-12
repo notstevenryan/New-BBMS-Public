@@ -55,7 +55,7 @@
 </style>
   
 <header class="vw-100">    
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-danger w-100">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-danger w-100">
         <div class="container-fluid">
           <a
             class="navbar-brand"
@@ -127,7 +127,6 @@
 </main>
     
 <!-- FOOTER -->
-<hr class="featurette-divider" />
 <footer class="bg-danger text-light py-4">
     <div class="container">
       <div class="row">

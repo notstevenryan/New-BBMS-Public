@@ -20,6 +20,10 @@
 </script>
 
 <style>
+  /* Add this CSS to ensure content is visible below the fixed header */
+  main {
+    padding-top: 100px; /* Adjust the value as needed; 56px is common for a Bootstrap navbar */
+    }
 
   /* START Animations*/
     /*Tilt-Forward*/
@@ -93,7 +97,15 @@
 </head>
 
 <body>
+  
   <main>
+    <!-- START Contentful news -->
+    <div class="container-md">
+      <hr class="featurette-divider" />
+      <br>
+      <h2> Latest News </h2>
+    </div>
+    <!-- END Contentful news -->
 
     <br>
     <!-- START Appointment Booking -->
@@ -108,6 +120,11 @@
         <BloodBankLocator />
       </div>
     <!-- END THE BLOOD BANK LOCATOR -->
+    <!-- START Donation history -->
+    <div class="container-md">
+    <br>
+      <h2> Donation History</h2> <br>
+    </div>
+    <!-- END Donation history -->
   </main>
-
 </body>
