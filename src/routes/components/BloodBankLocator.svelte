@@ -141,6 +141,8 @@
         gap: 20px; /* Optional: space between list and map */
         justify-content: space-between; /* Optional: space the items apart */
         align-items: flex-start; /* Align items to the start of the container */
+        background-color: #f5f5f5; /* Light gray background on hover */
+
         /* BORDER */
         border: 1px solid #ccc; /* Simple border with light gray color */
         padding: 10px; /* Optional: space inside the border */
@@ -171,7 +173,7 @@
     }
 
     :global(#bloodbank-list li:hover) {
-        background-color: #f5f5f5; /* Light gray background on hover */
+        background-color: #ffffff; /* Light gray background on hover */
         border-color: #333; /* Darker border color on hover */    }
     /* END List Style */
 

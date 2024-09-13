@@ -89,6 +89,13 @@
         }
       }
   /* END Animations */
+
+  #main-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 </style>
 
 <head>
@@ -97,13 +104,17 @@
 <body>
 
   <main>
+    <div id="main-title">
+      <h1>Blood Bank Management System</h1>
+    </div>
+
     <!-- START Contentful news -->
     <div class="container-md" id="news">
       <br>
-      <h2>📰 Latest News </h2>
-      tite
-      puke
-      burat
+      <h2> 📰 Latest News </h2>
+        tite
+        puke
+        burat
     </div>
     <!-- END Contentful news -->
 
