@@ -1,8 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
-export default {
-  plugins: [sveltekit()],
-  build: {
-    target: 'es2018'
-  }
-};
+export default defineConfig({
+	plugins: [sveltekit()]
+});

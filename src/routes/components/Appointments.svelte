@@ -35,7 +35,7 @@
 <!-- START APPOINTMENT BOOKING -->
     <hr class="featurette-divider" />
     <div class="container" id= "appointment-booking">
-      <h1 class="text-center">Welcome to the appointment system!</h1>
+      <h1 class="text-center">📅 Welcome to the appointment system!</h1>
         <div class="nav-buttons">
           <!-- Link to the appointment booking page -->
           <a href="/appointments/booking">Book an Appointment</a>

@@ -1,23 +1,3 @@
-# New-BBMS-Public
-Blood Bank Management System - Public Domain
-
-Table of Contents
-=====================
-- News (Coming Soon...)
-
-- Appointment System (Coming Soon...)
-
-- Bloodbank Locator
-
-- Check your donation history (Comming Soon...)
-
-Known Issues
-=====================
-- (Listed 2024/9/12) Locations listed twice in map, will fix soon 
-
-
-
-=====================
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
@@ -56,4 +36,3 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
->>>>>>> 53c34a3 (Initial commit)

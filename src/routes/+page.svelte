@@ -2,12 +2,10 @@
   /*  DO NOT TOUCH */
   import { onMount } from 'svelte';
 
-  /* APPOINTMENTS */
+
   import Appointments from './components/Appointments.svelte';
-
-
-  /*  BLOODBANK LOCATOR */
   import BloodBankLocator from './components/BloodBankLocator.svelte';
+	// import Contentful from './components/Contentful.svelte';
 
   onMount(() => {
     const script = document.createElement('script');
@@ -97,25 +95,27 @@
 </head>
 
 <body>
-  
+
   <main>
     <!-- START Contentful news -->
-    <div class="container-md">
-      <hr class="featurette-divider" />
+    <div class="container-md" id="news">
       <br>
-      <h2> Latest News </h2>
+      <h2>📰 Latest News </h2>
+      tite
+      puke
+      burat
     </div>
     <!-- END Contentful news -->
 
     <br>
     <!-- START Appointment Booking -->
-        <div class="container-md">
+        <div class="container-md" id="appointment">
           <Appointments />
         </div>
     <!-- END Appointment Booking -->
 
     <!-- START THE BLOOD BANK LOCATOR -->
-      <div class="container-md">
+      <div class="container-md" id="bloodbank-locator">
 
         <BloodBankLocator />
       </div>
@@ -123,8 +123,9 @@
     <!-- START Donation history -->
     <div class="container-md">
     <br>
-      <h2> Donation History</h2> <br>
+      <h2>📕 Donation History</h2> <br>
     </div>
     <!-- END Donation history -->
   </main>
+ 
 </body>
