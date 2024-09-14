@@ -7,6 +7,8 @@
     justify-content: center;
     height: 200px;
     text-align: center;
+    background-color: #f2f2f2;
+
 
     /* BORDER */
     border: 1px solid #ccc; /* Simple border with light gray color */
@@ -32,15 +34,15 @@
   }
 </style>
 
+
 <!-- START APPOINTMENT BOOKING -->
-    <hr class="featurette-divider" />
+    <h2 class="text">📅 Book an Appointment</h2>
     <div class="container" id= "appointment-booking">
-      <h2 class="text-center">📅 Welcome to the appointment system!</h2>
         <div class="nav-buttons">
           <!-- Link to the appointment booking page -->
-          <a href="/appointments/booking">Book an Appointment</a>
+          <a href="/appointments/">Book an Appointment</a>
           <!-- Link to view existing appointments -->
-          <a href="/appointments/view">View Appointments</a>
+          <!-- <a href="/appointments/view">View Appointments</a> -->
         </div>
     </div>
 <!-- END APPOINTMENT BOOKING -->

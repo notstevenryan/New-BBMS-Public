@@ -5,7 +5,6 @@
 
   import Appointments from './components/Appointments.svelte';
   import BloodBankLocator from './components/BloodBankLocator.svelte';
-	// import Contentful from './components/Contentful.svelte';
 
   onMount(() => {
     const script = document.createElement('script');
@@ -115,6 +114,7 @@
         tite
         puke
         burat
+      
     </div>
     <!-- END Contentful news -->
 

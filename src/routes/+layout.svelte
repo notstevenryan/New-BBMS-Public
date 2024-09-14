@@ -74,7 +74,7 @@
     main {
       padding: 2rem;
       min-height: calc(100vh - 120px); /* Ensures footer sticks to the bottom */
-      background-color: #e9e9e9;
+      background-color: #dcdcdc;
     }
 
 </style>

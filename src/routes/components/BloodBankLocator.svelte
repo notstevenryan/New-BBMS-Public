@@ -21,59 +21,59 @@
             lat: 14.5878723,
             lng: 120.9689759,
             address: "Bonifacio Drive, Port Area, Manila",
-            contactnum: "Tel: (02) 527-0861 - ",
+            contactnum: "Tel: (02) 527-0861",
             email: "Email: nbc@redcross.org.ph; christine.lanorio@redcross.org.ph"  },
 
-        { name: "Caloocan City",
+        { name: "Red Cross Caloocan City",
             lat: 14.6472031,
             lng: 120.9918658,
             address: "114 7th Ave, Grace Park East, Caloocan, 1403 Metro Manila",
             contactnum: "Tel: 02-3660380",
             email: "Email: caloocan@redcross.org.ph"  },
 
-        { name: "Makati City",
+        { name: "Red Cross Makati City",
             lat: 14.5561906,
             lng: 121.0034496,
             address: "55B Johnny Air building Dian st, Corner Sen. Gil J. Puyat Ave, Makati, Metro Manila",
             contactnum: "Tel: 403-6267 / Mobile: 0917-148-9419",
             email: "Email: rizalmakati@redcross.org.ph" },
 
-        { name: "Muntinlupa City",
+        { name: "Red Cross Muntinlupa City",
             lat: 14.4142464,
             lng: 121.0445581,
             address: "Red Cross Center Centennial Lane, Filinvest Corporate City, Alabang, Muntinlupa",
             contactnum: "Tel: 850-6813 / Mobile: 0917-838-7672",
             email: "Email: rizalmuntinlupa@redcross.org.ph" },
 
-        { name: "Pasay City",
+        { name: "Red Cross Pasay City",
             lat: 14.5308137,
             lng: 121.0039253,
             address: "2354 CAA Compound, Aurora Blvd. (old Tramo), Pasay City",
             contactnum: "Staff Agnes: 0918-917-1181 / 0917-815-1178",
             email: "Email: pasay@redcross.org.ph" },
 
-        { name: "Quezon City",
+        { name: "Red Cross Quezon City",
             lat: 14.6353606,
             lng: 121.0473315,
             address: "53 Malakas St, Diliman, Quezon City, Metro Manila",
             contactnum: "Tel: 433-6568 / 433-2152 / 433-2151 / 435-0238 / 434-3751",
             email: "Email: quezoncity@redcross.org.ph" },
 
-        { name: "Rizal - Main",
+        { name: "Red Cross Rizal - Main",
             lat: 14.5747847,
             lng: 121.0607356,
             address: "Bldg 611, PRC, Shaw Blvd, Pasig, 1603 Metro Manila",
             contactnum: "Tel: 631-3993",
             email: "Email: rizal@redcross.org.ph" },
 
-        { name: "Rizal - East",
+        { name: "Red Cross Rizal - East",
             lat: 14.5411116,
             lng: 121.1432423,
             address: "2nd Floor Multipurpose Bldg, Brgy Muzon, Taytay, Rizal",
             contactnum: "Tel: 998-4867 / Mobile: 0917-837-3805",
             email: "Email: prcrizalprovince@redcross.org.ph" },
 
-        { name: "Valenzuela City",
+        { name: "Red Cross Valenzuela City",
             lat: 14.6933534,
             lng: 120.9687491,
             address: "ALERT Compound, Malinta, Valenzuela, 1440, Metro Manila",
@@ -141,10 +141,10 @@
         gap: 20px; /* Optional: space between list and map */
         justify-content: space-between; /* Optional: space the items apart */
         align-items: flex-start; /* Align items to the start of the container */
-        background-color: #f5f5f5; /* Light gray background on hover */
+        background-color: #dcdcdc; 
 
         /* BORDER */
-        border: 1px solid #ccc; /* Simple border with light gray color */
+        border: 0px solid #ccc; /* Simple border with light gray color */
         padding: 10px; /* Optional: space inside the border */
         border-radius: 5px; /* Optional: rounded corners */   
         }
@@ -166,15 +166,16 @@
         border: 2px solid #ddd; /* Light border color */
         margin-bottom: 10px;
         padding: 10px;
-        border: 1px solid #ddd; 
+        border: 1px solid #aaa; 
         border-radius: 5px;
+        background-color: #f2f2f2;
         transition: background-color 0.3s, border-color 0.3s; /* Smooth transition for hover effect */
         cursor: pointer;
     }
 
     :global(#bloodbank-list li:hover) {
-        background-color: #ffffff; /* Light gray background on hover */
-        border-color: #333; /* Darker border color on hover */    }
+        background-color: #ffffff;
+        border-color: #202020; /* Darker border color on hover */    }
     /* END List Style */
 
     #map-container {
