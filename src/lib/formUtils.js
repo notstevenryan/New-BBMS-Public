@@ -42,3 +42,38 @@ export async function fetchLocations() {
     return { locations: [], message: error.message };
   }
 }
+
+// src/lib/formUtils.js
+export async function fetchAvailableSlots(date) {
+  try {
+    const response = await fetch(`/api/slots?date=${date}`);
+    if (!response.ok) {
+      throw new Error(`Error fetching slots: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return { slots: data.slots };
+  } catch (error) {
+    console.error('Fetch available slots error:', error);
+    return { slots: [], message: error.message };
+  }
+}
+
+
+export async function submitAppointment(appointment) {
+  try {
+    const response = await fetch('/api/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointment),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return { success: data.success, message: data.message };
+    } else {
+      throw new Error('Error booking appointment');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return { success: false, message: error.message };
+  }
+}

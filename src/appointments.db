@@ -1,7 +1,0 @@
-CREATE TABLE appointments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    email TEXT,
-    appointment_time TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);

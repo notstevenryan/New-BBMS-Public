@@ -119,11 +119,11 @@
     <!-- END Contentful news -->
 
     <br>
-    <!-- START Appointment Booking -->
+    <!-- START Donor Appointment Booking -->
         <div class="container-md" id="appointment">
           <Appointments />
         </div>
-    <!-- END Appointment Booking -->
+    <!-- END Donor Appointment Booking -->
 
     <!-- START THE BLOOD BANK LOCATOR -->
       <div class="container-md" id="bloodbank-locator">

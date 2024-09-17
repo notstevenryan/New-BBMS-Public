@@ -36,13 +36,15 @@
 
 
 <!-- START APPOINTMENT BOOKING -->
-    <h2 class="text">📅 Book an Appointment</h2>
+    <h2 class="text">📅 Donor Account</h2>
     <div class="container" id= "appointment-booking">
+      Login to book and view existing appointments
         <div class="nav-buttons">
-          <!-- Link to the appointment booking page -->
-          <a href="/appointments/">Book an Appointment</a>
-          <!-- Link to view existing appointments -->
-          <!-- <a href="/appointments/view">View Appointments</a> -->
+          <a href="/appointments/login">Login</a>
+        </div>
+        <div>
+          <br>
+          TITE
         </div>
     </div>
 <!-- END APPOINTMENT BOOKING -->

@@ -1,1 +1,2 @@
-export { default as component } from "../../../../src/routes/appointments/+page.svelte";
+import * as universal from "../../../../src/routes/appointments/+page.js";
+export { universal };

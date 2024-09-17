@@ -102,13 +102,19 @@
           
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#news" on:click={(e) => smoothScroll("#news", e)}>News</a>
+            <a class="nav-link" href="#news" 
+            on:click={(e) => smoothScroll("#news", e)}>
+            News</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#appointment" on:click={(e) => smoothScroll("#appointment", e)}>Book an Appointment</a>
+            <a class="nav-link" href="#appointment" 
+            on:click={(e) => smoothScroll("#appointment", e)}>
+            Book an Appointment</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#bloodbank-locator" on:click={(e) => smoothScroll("#bloodbank-locator", e)}>Blood Bank Locator</a>
+            <a class="nav-link" href="#bloodbank-locator" 
+            on:click={(e) => smoothScroll("#bloodbank-locator", e)}>
+            Blood Bank Locator</a>
           </li>
         </ul>
       </div>
@@ -117,6 +123,7 @@
 </header>
   
 <main>
+  <br> <br>
     <!-- This slot will render the content of the current page -->
     <slot />
 </main>
