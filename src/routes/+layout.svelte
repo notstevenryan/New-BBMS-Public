@@ -75,6 +75,9 @@
       padding: 2rem;
       min-height: calc(100vh - 120px); /* Ensures footer sticks to the bottom */
       background-color: #dcdcdc;
+      margin: 0;
+      padding: 0;
+      width: 100%;
     }
 
 </style>
@@ -123,7 +126,6 @@
 </header>
   
 <main>
-  <br> <br>
     <!-- This slot will render the content of the current page -->
     <slot />
 </main>

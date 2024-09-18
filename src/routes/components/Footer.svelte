@@ -33,11 +33,6 @@
     font-size: 40px; /* Icon size */
   }
 
-  .footer-copy {
-    margin-top: 1rem;
-  }
-
-
 </style>
 
 <!-- FOOTER -->
@@ -81,7 +76,6 @@
       </div>
     </div>
     <hr class="my-4" />
-    <p class="text-center footer-copy">&copy; 2023 For Capstone Use Only.</p>
   </div>
 </footer>
 <!-- END FOOTER -->

@@ -5,6 +5,8 @@
 
   import Appointments from './components/Appointments.svelte';
   import BloodBankLocator from './components/BloodBankLocator.svelte';
+  import Carousel from './components/Carousel.svelte';
+  import Contentful from './components/Contentful.svelte';
 
   onMount(() => {
     const script = document.createElement('script');
@@ -107,13 +109,20 @@
       <h1>Blood Bank Management System</h1>
     </div>
 
+    <!--Carousel Component-->
+    <div class="container-fluid p-0">
+      <div class="row no-gutters">
+        <div class="col-12">
+          <Carousel />
+        </div>
+      </div>
+    </div>
+
     <!-- START Contentful news -->
     <div class="container-md" id="news">
       <br>
       <h2> 📰 Latest News </h2>
-        tite
-        puke
-        burat
+        <Contentful />
       
     </div>
     <!-- END Contentful news -->
