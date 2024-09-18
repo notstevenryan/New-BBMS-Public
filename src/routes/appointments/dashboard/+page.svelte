@@ -1,21 +1,22 @@
 <script>
   import { onMount } from 'svelte';
   import { supabase } from '$lib/supabase.js';
+  import flatpickr from 'flatpickr';
+  import 'flatpickr/dist/flatpickr.min.css';
 
   let locations = [];
   let selectedLocation = '';
   let locationDetails = '';
-  let appointments = [];
-  let currentMonth = new Date().getMonth();
-  let currentYear = new Date().getFullYear();
   let availability = {};
+  let selectedDate = '';
+  let selectedWeek = [];
+  let datePickerInstance;
 
-  // Fetch locations from the Supabase database
+  // Fetch locations from Supabase
   const fetchLocations = async () => {
     let { data, error } = await supabase
       .from('locations')
-      .select('name, address');
-
+      .select('name, address, contact_numbers, email');
     if (error) {
       console.error('Error fetching locations:', error.message);
     } else {
@@ -23,21 +24,16 @@
     }
   };
 
-  // Update the selected location and display the address
+  // Update selected location details
   const updateLocationDetails = () => {
     const location = locations.find(loc => loc.name === selectedLocation);
-    locationDetails = location ? location.address : '';
+    locationDetails = location || null;
   };
 
-  onMount(() => {
-    fetchLocations();
-  });
-
-  // Fetch appointment slots for the current month
-  const fetchAppointments = async () => {
-    let firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-    let lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-
+  // Fetch availability for the selected month
+  const fetchAppointments = async (month, year) => {
+    let firstDayOfMonth = new Date(year, month, 1);
+    let lastDayOfMonth = new Date(year, month + 1, 0);
     let { data, error } = await supabase
       .from('appointment_slots')
       .select('*')
@@ -54,132 +50,149 @@
           maxSlots: appointment.max_slots,
         };
       });
+      updateFlatpickr();
     }
   };
 
-  // Helper function to get the number of days in the current month
-  const daysInMonth = () => new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  // Generate the days for the current month
-  const generateCalendar = () => {
-    let days = [];
-    for (let i = 1; i <= daysInMonth(); i++) {
-      const dateString = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
-      days.push({ date: dateString, availability: availability[dateString] });
-    }
-    return days;
+  // Initialize Flatpickr
+  const initializeFlatpickr = () => {
+    datePickerInstance = flatpickr('#date-picker', {
+      inline: true,
+      minDate: () => {
+        const today = new Date();
+        today.setDate(today.getDate() + 1); // Set to tomorrow
+        return today.toISOString().split('T')[0];
+      },
+      onDayCreate: (dObj, dStr, fp, dayElem) => {
+        const date = dayElem.dateObj.toISOString().split('T')[0];
+        if (availability[date]) {
+          const { availableSlots } = availability[date];
+          dayElem.style.backgroundColor = availableSlots === 0 ? '#d2261a' : '#6e9827'; // Red for fully booked, green for available
+          dayElem.style.color = '#fff'; // White text for contrast
+        } else {
+          dayElem.style.backgroundColor = '#ddd'; // Grey for no data
+          dayElem.style.color = '#000'; // Black text for grey background
+        }
+      },
+      onChange: (selectedDates) => {
+        selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
+        updateWeekAvailability(selectedDates[0]);
+      }
+    });
   };
 
-  // Call fetchAppointments on page mount
+  // Update Flatpickr based on availability
+  const updateFlatpickr = () => {
+    const availableDates = Object.keys(availability).filter(date => {
+      return availability[date].availableSlots > 0;
+    });
+    const fullyBookedDates = Object.keys(availability).filter(date => {
+      return availability[date].availableSlots === 0;
+    });
+
+    datePickerInstance.set('enable', availableDates);
+    datePickerInstance.set('disable', fullyBookedDates);
+  };
+
+  // Update availability for the selected week
+  const updateWeekAvailability = (date) => {
+    if (!date) return;
+    
+    const selectedDate = new Date(date);
+    const startOfWeek = selectedDate.getDate() - selectedDate.getDay(); // Sunday as start of week
+    const endOfWeek = startOfWeek + 6;
+
+    const weekDates = [];
+    for (let d = startOfWeek; d <= endOfWeek; d++) {
+      const weekDate = new Date(selectedDate);
+      weekDate.setDate(d);
+      const formattedDate = weekDate.toISOString().split('T')[0];
+      weekDates.push({
+        date: formattedDate,
+        availability: availability[formattedDate] || { availableSlots: 0, maxSlots: 0 }
+      });
+    }
+
+    selectedWeek = weekDates;
+  };
+
   onMount(() => {
-    fetchAppointments();
+    fetchLocations();
+    initializeFlatpickr();
+    fetchAppointments(new Date().getMonth(), new Date().getFullYear());
   });
 
-    // Color logic based on availability
-    const getColor = (day) => {
-    if (!day.availability) return 'grey'; // No data for the day
-
-    const { availableSlots, maxSlots } = day.availability;
-
-    if (availableSlots === 0) return 'red'; // Fully booked
-    if (availableSlots < maxSlots) return 'orange'; // Reduced availability
-    return 'green'; // Fully open
+  // Handle form submission (book appointment)
+  const bookAppointment = (e) => {
+    e.preventDefault();
+    if (!selectedDate || !selectedLocation) {
+      alert('Please fill all fields.');
+      return;
+    }
+    alert('Appointment booked successfully!');
+    // Reset form
+    selectedDate = '';
+    selectedLocation = '';
   };
-
-    let date = '';
-    let time = '';
-    let appointmentList = [];
-  
-    const timeOptions = [
-      "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
-      "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
-    ];
-    
-    const bookAppointment = (e) => {
-      e.preventDefault();
-  
-      if (!date || !time || !location) {
-        alert('Please fill all fields.');
-        return;
-      }
-  
-      appointmentList = [
-        ...appointmentList,
-        { date, time, location }
-      ];
-  
-      alert('Appointment booked successfully!');
-      
-      // Clear form
-      date = '';
-      time = '';
-      location = '';
-    };
 </script>
 
 <main>
-
   <h2>Dashboard</h2>
-  
-  <!-- Booking Form -->
   <form on:submit={bookAppointment}>
-    <div>
-      <label for="date">Date:</label>
-      <input type="date" id="date" bind:value={date} required />
-    </div>
 
-    <div class="calendar">
-      {#each generateCalendar() as day}
-        <div class="day {getColor(day)}">
-          {new Date(day.date).getDate()}
-        </div>
-      {/each}
-    </div>
-  
+    <!-- Location Selection -->
     <div>
-      <label for="time">Time:</label>
-      <select id="time" bind:value={time}>
-        <option value="">Select time</option>
-        {#each timeOptions as timeOption}
-          <option value={timeOption}>{timeOption}</option>
-        {/each}
-      </select>
-    </div>
-  
-    <div class="location-container">
-      <h3>Select a Location:</h3>
-      <select bind:value={selectedLocation} on:change={updateLocationDetails}>
+      <label for="location">Location:</label>
+      <select id="location" bind:value={selectedLocation} on:change={updateLocationDetails}>
         <option value="">Select a location</option>
         {#each locations as loc}
           <option value={loc.name}>{loc.name}</option>
         {/each}
+
+        {#if locationDetails}
+          <p><b>Address:</b> {locationDetails.address}</p>
+          <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
+          <p><b>Email:</b> {locationDetails.email}</p>
+        {/if}
       </select>
-      
-      {#if locationDetails}
-        <div class="location-details">
-          <p><b>Address:</b> {locationDetails}</p>
-        </div>
-      {/if}
     </div>
-  
+
+    <!-- Flatpickr Date Picker -->
+    <label for="date">Select Date:</label>
+    <div id="date-picker"></div>
+      <div>    <!-- Selected Week Availability -->
+        {#if selectedDate}
+          <div class="selected-date">Selected Date: {selectedDate}</div>
+          <h4>Availability for the Week:</h4>
+          <ul class="week-availability">
+            {#each selectedWeek as { date, availability }}
+              <li class={availability.availableSlots === 0 ? 'fully-booked' : availability.availableSlots > 0 ? 'available' : 'no-data'}>
+                {date}: 
+                {availability.availableSlots === 0 ? 'Not available' : availability.availableSlots > 0 ? `Available Slots: ${availability.availableSlots}` : 'No Data'}
+              </li>
+            {/each}
+          </ul>
+        {/if}      
+      </div>
+
+    <div>
+      <br>
+      <label for="time">Time:</label>
+      <select id="time">
+        <option value="9:00 AM">9:00 AM</option>
+        <option value="10:00 AM">10:00 AM</option>
+        <option value="11:00 AM">11:00 AM</option>
+        <option value="12:00 PM">12:00 PM</option>
+        <option value="1:00 PM">1:00 PM</option>
+        <option value="2:00 PM">2:00 PM</option>
+        <option value="3:00 PM">3:00 PM</option>
+        <option value="4:00 PM">4:00 PM</option>
+        <option value="5:00 PM">5:00 PM</option>
+      </select>
+    </div>
+
     <button type="submit">Book Appointment</button>
   </form>
-  
-  <!-- Appointment List -->
-  <div class="appointment-list">
-    <h3>Your Appointments</h3>
-    {#if appointmentList.length > 0}
-      {#each appointmentList as appointment}
-        <div>
-          <strong>Date:</strong> {appointment.date} <br>
-          <strong>Time:</strong> {appointment.time} <br>
-          <strong>Location:</strong> {appointment.location}
-        </div>
-      {/each}
-    {:else}
-      <p>No appointments booked yet.</p>
-    {/if}
-  </div>
 </main>
 
 <style>
@@ -211,60 +224,42 @@
   button:hover {
     background-color: #0056b3;
   }
-  .appointment-list {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 1rem;
-    background: #f5f5f5;
-    border-radius: 8px;
-  }
-  .appointment-list div {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #ddd;
-  }
 
-  .location-container {
-    max-width: 600px;
-    margin: 1rem auto;
+  /* Style for the week availability list */
+  .week-availability {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
   }
-
-  .location-details {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #e2e2e2;
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-
-  .calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-  }
-
-  .day {
-    padding: 10px;
+  
+  .week-availability li {
+    padding: 0.5rem;
+    margin: 0.2rem 0;
     border-radius: 4px;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .week-availability .available {
+    background-color: #6e9827; /* Green for available */
+    color: #fff;
+  }
+  
+  .week-availability .fully-booked {
+    background-color: #d2261a; /* Red for fully booked */
+    color: #fff;
+  }
+  
+  .week-availability .no-data {
+    background-color: #ddd; /* Grey for no data */
+    color: #000;
   }
 
-  .green {
-    background-color: green;
-    color: white;
+  /* Highlight the selected date */
+  .selected-date {
+    font-weight: bold;
+    margin-top: 1rem;
   }
-
-  .orange {
-    background-color: orange;
-    color: white;
-  }
-
-  .red {
-    background-color: red;
-    color: white;
-  }
-
-  .grey {
-    background-color: lightgrey;
-    color: black;
-  }
+  
 </style>

@@ -123,7 +123,7 @@
 </header>
   
 <main>
-  <br> <br>
+  <br>
     <!-- This slot will render the content of the current page -->
     <slot />
 </main>

@@ -18,6 +18,7 @@
 	"dependencies": {
 		"@supabase/supabase-js": "^2.45.4",
 		"bootstrap": "^5.3.3",
-		"contentful": "^10.15.1"
+		"contentful": "^10.15.1",
+		"flatpickr": "^4.6.13"
 	}
 }
