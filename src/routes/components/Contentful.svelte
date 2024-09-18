@@ -168,6 +168,41 @@
     font-size: 1.5rem;
     border-radius: 8px;
   }
+
+  /* Newsletter signup section styling */
+  .newsletter-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 3rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+  }
+
+  .newsletter-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .newsletter-section h2 {
+    color: #D50000;
+    margin-bottom: 1rem;
+  }
+
+  .newsletter-section a {
+    background-color: #D50000;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    display: inline-block;
+  }
+
+  .newsletter-section a:hover {
+    background-color: #9d0000;
+  }
 </style>
 
 <main>
@@ -211,6 +246,13 @@
       >
         &raquo;
       </button>
+    </div>
+
+    <!-- Newsletter Signup Section -->
+    <div class="newsletter-section">
+      <h2>Signup For Our Newsletter!</h2>
+      <p>Stay updated with the latest news and updates by signing up for our newsletter.</p>
+      <a href="/appointments/newsletter">Learn More</a>
     </div>
   </div>
 </main>
