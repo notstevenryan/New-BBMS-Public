@@ -1,45 +1,3 @@
-<style>
-
-  /* Footer styles */
-  .footer {
-    background-color: #dc3545; /* Bootstrap's bg-danger color */
-    color: #fff;
-  }
-
-  .footer-heading {
-    font-weight: 900;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-style: italic;
-  }
-
-  .footer-text {
-    margin-bottom: 1rem;
-  }
-
-  .footer-subheading {
-    font-weight: 600;
-  }
-
-  .social-list {
-    padding: 0;
-  }
-
-  .social-list-item {
-    margin: 0 0.5rem; /* Space between social icons */
-  }
-
-  .social-list-item a {
-    color: #fff;
-    font-size: 40px; /* Icon size */
-  }
-
-  .footer-copy {
-    margin-top: 1rem;
-  }
-
-
-</style>
-
 <!-- FOOTER -->
 <footer class="footer bg-danger text-light py-4">
   <div class="container">
@@ -85,3 +43,45 @@
   </div>
 </footer>
 <!-- END FOOTER -->
+
+<style>
+
+  /* Footer styles */
+  .footer {
+    background-color: #dc3545; /* Bootstrap's bg-danger color */
+    color: #fff;
+  }
+
+  .footer-heading {
+    font-weight: 900;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: italic;
+  }
+
+  .footer-text {
+    margin-bottom: 1rem;
+  }
+
+  .footer-subheading {
+    font-weight: 600;
+  }
+
+  .social-list {
+    padding: 0;
+  }
+
+  .social-list-item {
+    margin: 0 0.5rem; /* Space between social icons */
+  }
+
+  .social-list-item a {
+    color: #fff;
+    font-size: 40px; /* Icon size */
+  }
+
+  .footer-copy {
+    margin-top: 1rem;
+  }
+
+
+</style>

@@ -7,9 +7,10 @@
   let locations = [];
   let selectedLocation = '';
   let locationDetails = '';
-  let availability = {};
+  let availability = {}; // Holds availability for the selected date
   let selectedDate = '';
-  let selectedWeek = [];
+  let selectedTime = ''; // Time window selected (Morning, Afternoon, Evening)
+  let availableSlots = { Morning: 0, Afternoon: 0, Evening: 0 }; // Default slot values
   let datePickerInstance;
 
   // Fetch locations from Supabase
@@ -28,29 +29,28 @@
   const updateLocationDetails = () => {
     const location = locations.find(loc => loc.name === selectedLocation);
     locationDetails = location || null;
+    if (selectedDate) {
+      fetchAvailability(selectedDate, selectedLocation);
+    }
   };
 
-  // Fetch availability for the selected month
-  const fetchAppointments = async (month, year) => {
-    let firstDayOfMonth = new Date(year, month, 1);
-    let lastDayOfMonth = new Date(year, month + 1, 0);
+  // Fetch availability for the selected date and location
+  const fetchAvailability = async (date, location) => {
     let { data, error } = await supabase
       .from('appointment_slots')
       .select('*')
-      .gte('date', firstDayOfMonth.toISOString())
-      .lte('date', lastDayOfMonth.toISOString());
+      .eq('date', date)
+      .eq('location', location);
 
     if (error) {
-      console.error('Error fetching appointments:', error.message);
+      console.error('Error fetching availability:', error.message);
     } else {
-      availability = {};
+      availability = { Morning: 0, Afternoon: 0, Evening: 0 };
       data.forEach(appointment => {
-        availability[appointment.date] = {
-          availableSlots: appointment.available_slots,
-          maxSlots: appointment.max_slots,
-        };
+        availability[appointment.time_slot] = appointment.available_slots;
       });
-      updateFlatpickr();
+      availableSlots = { ...availability };
+      updateFlatpickr(); // Update Flatpickr based on availability
     }
   };
 
@@ -58,142 +58,122 @@
   const initializeFlatpickr = () => {
     datePickerInstance = flatpickr('#date-picker', {
       inline: true,
-      minDate: () => {
+      minDate: (() => {
         const today = new Date();
         today.setDate(today.getDate() + 1); // Set to tomorrow
         return today.toISOString().split('T')[0];
-      },
-      onDayCreate: (dObj, dStr, fp, dayElem) => {
-        const date = dayElem.dateObj.toISOString().split('T')[0];
-        if (availability[date]) {
-          const { availableSlots } = availability[date];
-          dayElem.style.backgroundColor = availableSlots === 0 ? '#d2261a' : '#6e9827'; // Red for fully booked, green for available
-          dayElem.style.color = '#fff'; // White text for contrast
-        } else {
-          dayElem.style.backgroundColor = '#ddd'; // Grey for no data
-          dayElem.style.color = '#000'; // Black text for grey background
-        }
-      },
+      })(),
       onChange: (selectedDates) => {
         selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
-        updateWeekAvailability(selectedDates[0]);
+        if (selectedLocation) {
+          fetchAvailability(selectedDate, selectedLocation);
+        }
       }
     });
   };
 
-  // Update Flatpickr based on availability
+  // Update Flatpickr based on fetched availability
   const updateFlatpickr = () => {
-    const availableDates = Object.keys(availability).filter(date => {
-      return availability[date].availableSlots > 0;
-    });
-    const fullyBookedDates = Object.keys(availability).filter(date => {
-      return availability[date].availableSlots === 0;
+    // Reset enabled dates
+    datePickerInstance.set('enable', []);
+
+    // Highlight available dates
+    datePickerInstance.set('onDayCreate', (dObj, dStr, fp, dayElem) => {
+      const date = dayElem.dateObj.toISOString().split('T')[0];
+      if (availability[date]) {
+        const totalAvailable = availability.Morning + availability.Afternoon + availability.Evening;
+        dayElem.style.backgroundColor = totalAvailable === 0 ? '#d2261a' : '#6e9827'; // Red if fully booked, green if available
+        dayElem.style.color = '#fff'; // White text for contrast
+      }
     });
 
-    datePickerInstance.set('enable', availableDates);
-    datePickerInstance.set('disable', fullyBookedDates);
+    // Re-render Flatpickr with updated availability data
+    datePickerInstance.redraw();
   };
 
-  // Update availability for the selected week
-  const updateWeekAvailability = (date) => {
-    if (!date) return;
-    
-    const selectedDate = new Date(date);
-    const startOfWeek = selectedDate.getDate() - selectedDate.getDay(); // Sunday as start of week
-    const endOfWeek = startOfWeek + 6;
-
-    const weekDates = [];
-    for (let d = startOfWeek; d <= endOfWeek; d++) {
-      const weekDate = new Date(selectedDate);
-      weekDate.setDate(d);
-      const formattedDate = weekDate.toISOString().split('T')[0];
-      weekDates.push({
-        date: formattedDate,
-        availability: availability[formattedDate] || { availableSlots: 0, maxSlots: 0 }
-      });
+  // Handle form submission (book appointment)
+  const bookAppointment = async (e) => {
+    e.preventDefault();
+    if (!selectedDate || !selectedLocation || !selectedTime) {
+      alert('Please fill all fields.');
+      return;
     }
 
-    selectedWeek = weekDates;
+    if (availability[selectedTime] === 0) {
+      alert('No available slots for the selected time.');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('appointment_slots')
+      .update({ available_slots: availability[selectedTime] - 1 })
+      .eq('date', selectedDate)
+      .eq('time_slot', selectedTime)
+      .eq('location', selectedLocation);
+
+    if (error) {
+      console.error('Error booking appointment:', error.message);
+    } else {
+      alert('Appointment booked successfully!');
+      // Update local availability
+      availability[selectedTime] -= 1;
+      selectedDate = '';
+      selectedLocation = '';
+      selectedTime = '';
+    }
   };
 
   onMount(() => {
     fetchLocations();
     initializeFlatpickr();
-    fetchAppointments(new Date().getMonth(), new Date().getFullYear());
   });
-
-  // Handle form submission (book appointment)
-  const bookAppointment = (e) => {
-    e.preventDefault();
-    if (!selectedDate || !selectedLocation) {
-      alert('Please fill all fields.');
-      return;
-    }
-    alert('Appointment booked successfully!');
-    // Reset form
-    selectedDate = '';
-    selectedLocation = '';
-  };
 </script>
 
 <main>
-  <h2>Dashboard</h2>
+  <h2>Book an Appointment</h2>
   <form on:submit={bookAppointment}>
-
     <!-- Location Selection -->
     <div>
-      <label for="location">Location:</label>
+      <label for="location"><b>Location:</label>
       <select id="location" bind:value={selectedLocation} on:change={updateLocationDetails}>
         <option value="">Select a location</option>
         {#each locations as loc}
           <option value={loc.name}>{loc.name}</option>
         {/each}
+      </select>
 
-        {#if locationDetails}
-          <p><b>Address:</b> {locationDetails.address}</p>
-          <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
-          <p><b>Email:</b> {locationDetails.email}</p>
+      {#if locationDetails}
+        <p><b>Address:</b> {locationDetails.address}</p>
+        <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
+        <p><b>Email:</b> {locationDetails.email}</p>
+      {/if}
+    </div>
+
+    <!-- Flatpickr Date Picker -->
+    <label for="date"><b>Select Date:</label>
+    <div id="date-picker"></div>
+
+    <!-- Time Window Selection (Display only if there are available slots) -->
+    <div>
+      <label for="time"><b>Time:</label>
+      <select id="time" bind:value={selectedTime} disabled={!selectedDate || !selectedLocation}>
+        <option value="">Select Time Window</option>
+        {#if availableSlots.Morning > 0}
+          <option value="Morning">Morning (09AM - 12PM) - {availableSlots.Morning} slots left</option>
+        {/if}
+        {#if availableSlots.Afternoon > 0}
+          <option value="Afternoon">Afternoon (12PM - 04PM) - {availableSlots.Afternoon} slots left</option>
+        {/if}
+        {#if availableSlots.Evening > 0}
+          <option value="Evening">Evening (04PM - 07PM) - {availableSlots.Evening} slots left</option>
         {/if}
       </select>
     </div>
 
-    <!-- Flatpickr Date Picker -->
-    <label for="date">Select Date:</label>
-    <div id="date-picker"></div>
-      <div>    <!-- Selected Week Availability -->
-        {#if selectedDate}
-          <div class="selected-date">Selected Date: {selectedDate}</div>
-          <h4>Availability for the Week:</h4>
-          <ul class="week-availability">
-            {#each selectedWeek as { date, availability }}
-              <li class={availability.availableSlots === 0 ? 'fully-booked' : availability.availableSlots > 0 ? 'available' : 'no-data'}>
-                {date}: 
-                {availability.availableSlots === 0 ? 'Not available' : availability.availableSlots > 0 ? `Available Slots: ${availability.availableSlots}` : 'No Data'}
-              </li>
-            {/each}
-          </ul>
-        {/if}      
-      </div>
-
-    <div>
-      <br>
-      <label for="time">Time:</label>
-      <select id="time">
-        <option value="9:00 AM">9:00 AM</option>
-        <option value="10:00 AM">10:00 AM</option>
-        <option value="11:00 AM">11:00 AM</option>
-        <option value="12:00 PM">12:00 PM</option>
-        <option value="1:00 PM">1:00 PM</option>
-        <option value="2:00 PM">2:00 PM</option>
-        <option value="3:00 PM">3:00 PM</option>
-        <option value="4:00 PM">4:00 PM</option>
-        <option value="5:00 PM">5:00 PM</option>
-      </select>
-    </div>
-
-    <button type="submit">Book Appointment</button>
+    <button type="submit" disabled={!selectedTime || !selectedLocation || !selectedDate}>Book Appointment</button>
   </form>
 </main>
+
 
 <style>
   form {
@@ -223,43 +203,6 @@
   }
   button:hover {
     background-color: #0056b3;
-  }
-
-  /* Style for the week availability list */
-  .week-availability {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .week-availability li {
-    padding: 0.5rem;
-    margin: 0.2rem 0;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .week-availability .available {
-    background-color: #6e9827; /* Green for available */
-    color: #fff;
-  }
-  
-  .week-availability .fully-booked {
-    background-color: #d2261a; /* Red for fully booked */
-    color: #fff;
-  }
-  
-  .week-availability .no-data {
-    background-color: #ddd; /* Grey for no data */
-    color: #000;
-  }
-
-  /* Highlight the selected date */
-  .selected-date {
-    font-weight: bold;
-    margin-top: 1rem;
   }
   
 </style>

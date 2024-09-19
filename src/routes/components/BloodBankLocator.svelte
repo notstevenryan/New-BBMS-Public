@@ -128,7 +128,19 @@
         window.initMap = initMap;
     });
 </script>
-  
+
+<br> <h2>📍Blood Banks Near You</h2> <br>
+<div class="bloodbank-container">
+    <div id="bloodbank-list">
+      <ul id="bloodbank-list-items">
+        <!-- Blood bank list items will be populated dynamically -->
+      </ul>
+    </div>
+    <div id="map-container">
+      <div id="map"></div>
+    </div>
+</div>
+
 <style>
     #map {
         width: 100%;
@@ -184,17 +196,5 @@
         }
 
 </style>
-
-<br> <h2>📍Blood Banks Near You</h2> <br>
-<div class="bloodbank-container">
-    <div id="bloodbank-list">
-      <ul id="bloodbank-list-items">
-        <!-- Blood bank list items will be populated dynamically -->
-      </ul>
-    </div>
-    <div id="map-container">
-      <div id="map"></div>
-    </div>
-</div>
   
   

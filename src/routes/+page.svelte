@@ -1,10 +1,9 @@
 <script>
   /*  DO NOT TOUCH */
   import { onMount } from 'svelte';
-
-
   import Appointments from './components/Appointments.svelte';
   import BloodBankLocator from './components/BloodBankLocator.svelte';
+  import Sidebar from './components/Sidebar.svelte';
 
   onMount(() => {
     const script = document.createElement('script');
@@ -12,14 +11,52 @@
     script.defer = true;
     document.head.appendChild(script);
   });
-
-  /*  Bootstrap */    
+  
 </script>
+
+<body>
+
+  <main>
+
+    <Sidebar/>
+    <div id="main-title">
+      <h1>Blood Bank Management System</h1>
+    </div>
+
+    <!-- START Contentful news -->
+    <div class="container-md" id="news">
+      <br>
+      <h2> 📰 Latest News </h2>
+        tite
+        puke
+        burat
+    </div>
+    <!-- END Contentful news -->
+     
+    <div><br></div>
+
+    <!-- START Donor Appointment Booking -->
+        <div class="container-md" id="appointment">
+          <Appointments />
+        </div>
+    <!-- END Donor Appointment Booking -->
+
+    <!-- START THE BLOOD BANK LOCATOR -->
+      <div class="container-md" id="bloodbank-locator">
+
+        <BloodBankLocator />
+      </div>
+    <!-- END THE BLOOD BANK LOCATOR -->
+
+    <div> <br> </div>
+  </main>
+ 
+</body>
 
 <style>
   /* Add this CSS to ensure content is visible below the fixed header */
   main {
-    padding-top: 100px; /* Adjust the value as needed; 56px is common for a Bootstrap navbar */
+    padding-top: 50px; /* Adjust the value as needed; 56px is common for a Bootstrap navbar */
     }
 
   /* START Animations*/
@@ -95,48 +132,5 @@
     align-items: center;
     text-align: center;
   }
+
 </style>
-
-<head>
-</head>
-
-<body>
-
-  <main>
-    <div id="main-title">
-      <h1>Blood Bank Management System</h1>
-    </div>
-
-    <!-- START Contentful news -->
-    <div class="container-md" id="news">
-      <br>
-      <h2> 📰 Latest News </h2>
-        tite
-        puke
-        burat
-      
-    </div>
-    <!-- END Contentful news -->
-
-    <br>
-    <!-- START Donor Appointment Booking -->
-        <div class="container-md" id="appointment">
-          <Appointments />
-        </div>
-    <!-- END Donor Appointment Booking -->
-
-    <!-- START THE BLOOD BANK LOCATOR -->
-      <div class="container-md" id="bloodbank-locator">
-
-        <BloodBankLocator />
-      </div>
-    <!-- END THE BLOOD BANK LOCATOR -->
-    <!-- START Donation history -->
-    <div class="container-md">
-    <br>
-      <h2>📕 Donation History</h2> <br>
-    </div>
-    <!-- END Donation history -->
-  </main>
- 
-</body>

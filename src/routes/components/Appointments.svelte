@@ -36,7 +36,7 @@
 
 
 <!-- START APPOINTMENT BOOKING -->
-    <h2 class="text">📅 Donor Account</h2>
+    <h2 class="text">📅 Book an Appointment</h2>
     <div class="container" id= "appointment-booking">
       Login to book and view existing appointments
         <div class="nav-buttons">
