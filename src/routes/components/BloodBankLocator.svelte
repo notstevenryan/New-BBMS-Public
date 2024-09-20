@@ -129,7 +129,7 @@
     });
 </script>
 
-<br> <h2>📍Blood Banks Near You</h2> <br>
+<h2>📍Blood Banks Near You</h2> <br>
 <div class="bloodbank-container">
     <div id="bloodbank-list">
       <ul id="bloodbank-list-items">

@@ -29,6 +29,34 @@ TITE
   };
 </script>
 
+<div class="auth-form">
+  <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
+  <form on:submit={handleAuth}>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" 
+      bind:value={email} 
+      placeholder="Enter your email" required />
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" 
+      bind:value={password} 
+      placeholder="Enter your password" required />
+    </div>
+    <button class="bg-primary" type="submit">
+      {isSignup ? 'Sign Up' : 'Login'}
+    </button>
+  </form>
+
+  <p>
+    {isSignup ? 'Already have an account?' : 'Don’t have an account?'} 
+    <a href="/appointments/signup/" 
+    on:click={toggleAuthMode}>
+    {isSignup ? 'Login' : 'Sign up'}</a>
+  </p>
+</div>
+
 <style>
   .auth-form {
     max-width: 400px;
@@ -49,7 +77,6 @@ TITE
     border-radius: 4px;
   }
   button {
-    background-color: #007bff;
     color: white;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -60,30 +87,3 @@ TITE
   }
 </style>
 
-<div class="auth-form">
-  <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
-  <form on:submit={handleAuth}>
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" 
-      bind:value={email} 
-      placeholder="Enter your email" required />
-    </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" 
-      bind:value={password} 
-      placeholder="Enter your password" required />
-    </div>
-    <button type="submit">
-      {isSignup ? 'Sign Up' : 'Login'}
-    </button>
-  </form>
-
-  <p>
-    {isSignup ? 'Already have an account?' : 'Don’t have an account?'} 
-    <a href="/appointments/signup/" 
-    on:click={toggleAuthMode}>
-    {isSignup ? 'Login' : 'Sign up'}</a>
-  </p>
-</div>
