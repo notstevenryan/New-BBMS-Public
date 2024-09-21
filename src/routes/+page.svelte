@@ -4,6 +4,8 @@
   import Appointments from './components/Appointments.svelte';
   import BloodBankLocator from './components/BloodBankLocator.svelte';
   import Sidebar from './components/Sidebar.svelte';
+  import Contentful from './components/Contentful.svelte';
+
 
   onMount(() => {
     const script = document.createElement('script');
@@ -33,9 +35,8 @@
         border-radius: 5px;"
         >
           <h2> 📰 Latest News </h2>
-          tite
-          puke
-          burat
+          <Contentful />
+
         </div>
  
     </div>

@@ -16,9 +16,13 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/supabase-js": "^2.45.4",
-		"bootstrap": "^5.3.3",
-		"contentful": "^10.15.1",
-		"flatpickr": "^4.6.13"
+		"@contentful/app-sdk": "^4.23.1",
+		"@supabase/supabase-js": "^2.39.3",
+		"audit": "^0.0.6",
+		"contentful": "^10.6.12",
+		"fix": "^0.0.6",
+		"flatpickr": "^4.6.13",
+		"fund": "^1.0.0",
+		"moment": "^2.30.1"
 	}
 }
