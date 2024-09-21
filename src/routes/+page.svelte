@@ -5,6 +5,8 @@
   import BloodBankLocator from './components/BloodBankLocator.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import Contentful from './components/Contentful.svelte';
+  import Carousel from './components/Carousel.svelte';
+
 
 
   onMount(() => {
@@ -23,6 +25,15 @@
     <Sidebar/>
     <div id="main-title">
       <h1>Blood Bank Management System</h1>
+    </div>
+
+    <!--Carousel Component-->
+    <div class="container-fluid p-0">
+      <div class="row no-gutters">
+        <div class="col-12">
+          <Carousel />
+        </div>
+      </div>
     </div>
 
     <!-- START Contentful news -->
