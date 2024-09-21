@@ -96,9 +96,4 @@
     transition: margin-left 0.25s; /* Optional: transition for content */
   }
 
-  /* Add this class when sidebar is opened */
-  .sidebar-open main {
-    margin-left: 200px; /* Match the width of the sidebar */
-  }
-
 </style>

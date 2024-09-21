@@ -129,8 +129,9 @@
     });
 </script>
 
-<h2>📍Blood Banks Near You</h2> <br>
+<h2>📍Blood Banks Near You</h2>
 <div class="bloodbank-container">
+
     <div id="bloodbank-list">
       <ul id="bloodbank-list-items">
         <!-- Blood bank list items will be populated dynamically -->
@@ -139,6 +140,7 @@
     <div id="map-container">
       <div id="map"></div>
     </div>
+    
 </div>
 
 <style>

@@ -1,4 +1,3 @@
-TITE
 <script lang="ts">
   import { goto } from '$app/navigation'; // Import the goto function for navigation
   let email = '';
