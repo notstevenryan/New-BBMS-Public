@@ -1,26 +1,40 @@
-<script lang="ts">
-  import { goto } from '$app/navigation'; // Import the goto function for navigation
+<script lang="js">
+  import { goto } from '$app/navigation';
+  import { supabase } from '$lib/supabase'; // Make sure to import your Supabase client
+  
   let email = '';
   let password = '';
   let isSignup = false; // Toggle between login and signup
 
-  const handleAuth = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !email.includes('@') || !password) {
       alert('Please fill in valid credentials.');
       return;
     }
-    
-    if (isSignup) {
-      alert('Signed up successfully! Now log in.');
-    } else {
-      // Simulate a successful login
-      alert('Logged in successfully! Redirecting...');
-      
-      // Redirect to dashboard after login
-      goto('/appointments/dashboard');
-    }
+
+    try {
+      let response;
+
+      if (isSignup) {
+        response = await supabase.auth.signUp({ email, password });
+        if (response.error) throw response.error;
+        alert('Signed up successfully! Now log in.');
+      } else {
+        response = await supabase.auth.signInWithPassword({ email, password });
+        if (response.error) throw response.error;
+
+        alert('Logged in successfully! Redirecting...');
+        goto('/appointments/dashboard');
+      }
+    } catch (error) {
+  if (error instanceof Error) {
+    alert(`Error: ${error.message}`);
+  } else {
+    alert('An unknown error occurred');
+  }
+}
   };
 
   const toggleAuthMode = () => {
@@ -33,26 +47,19 @@
   <form on:submit={handleAuth}>
     <div>
       <label for="email">Email:</label>
-      <input type="email" id="email" 
-      bind:value={email} 
-      placeholder="Enter your email" required />
+      <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
     </div>
     <div>
       <label for="password">Password:</label>
-      <input type="password" id="password" 
-      bind:value={password} 
-      placeholder="Enter your password" required />
+      <input type="password" id="password" bind:value={password} placeholder="Enter your password" required />
     </div>
-    <button class="bg-primary" type="submit">
-      {isSignup ? 'Sign Up' : 'Login'}
-    </button>
+    <button class="bg-primary" type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
   </form>
 
-  <p>
-    {isSignup ? 'Already have an account?' : 'Don’t have an account?'} 
-    <a href="/appointments/signup/" 
-    on:click={toggleAuthMode}>
-    {isSignup ? 'Login' : 'Sign up'}</a>
+  <p>{isSignup ? 'Already have an account?' : 'Don’t have an account?'} 
+    <a href="/appointments/signup/" on:click|preventDefault={toggleAuthMode}>
+      {isSignup ? 'Login' : 'Sign up'}
+    </a>
   </p>
 </div>
 

@@ -1,8 +1,7 @@
 {
 	"/": [],
-	"/appointments": [
-		"src/routes/appointments/+page.js"
-	],
-	"/appointments/booking": [],
-	"/appointments/view": []
+	"/appointments/dashboard": [],
+	"/appointments/login": [],
+	"/appointments/newsletter": [],
+	"/appointments/signup": []
 }

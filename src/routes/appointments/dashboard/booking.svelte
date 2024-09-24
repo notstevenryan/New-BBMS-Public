@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { fetchLocations, fetchAvailability, initializeFlatpickr, bookAppointment } from '$lib/appointmentsHelper.js';
+    import { supabase } from '$lib/supabase.js';
   
     let locations = [];
     let selectedLocation = '';
@@ -38,14 +39,22 @@
     });
   
     const handleFormSubmit = async (e) => {
-      e.preventDefault();
-      await bookAppointment(selectedDate, selectedLocation, selectedTime, donationType, notes, availability);
-      selectedDate = '';
-      selectedLocation = '';
-      selectedTime = '';
-      donationType = '';
-      notes = '';
-    };
+  e.preventDefault();
+  const success = await bookAppointment(e, selectedDate, selectedLocation, selectedTime, availability);
+
+  if (success) {
+    // Clear form and show success message
+    selectedDate = '';
+    selectedLocation = '';
+    selectedTime = '';
+    donationType = '';
+    notes = '';
+    alert('Appointment successfully booked!');
+  } else {
+    alert('Failed to book appointment.');
+  }
+};
+
   </script>
   
   <main> 
