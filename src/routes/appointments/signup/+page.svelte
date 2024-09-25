@@ -1,20 +1,13 @@
 <script>
   import { goto } from '$app/navigation';
-  import { supabase } from '$lib/supabase.js';
-  import { onMount } from 'svelte'; // onMount is required to apply the input mask
-  import Inputmask from "inputmask"; // Import Inputmask library
-  
+  import { supabase } from '$lib/supabase';
+
   let name = '';
   let email = '';
   let password = '';
   let confirmPassword = '';
-  let phoneNumber = ''; 
+  let phoneNumber = '';
   let error = '';
-
-  onMount(() => {
-    // Apply input mask for the phone number input field
-    Inputmask("0999-999-9999").mask(document.getElementById("phoneNumber"));
-  });
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -40,19 +33,29 @@
 
     // Supabase sign up logic
     try {
-      const { data, error: signupError } = await supabase.auth.signUp({
+      const { user, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name,
-            phoneNumber, // Save additional user data including phone number
+            phone: phoneNumber,  // Add phone number to the user metadata
+            display_name: name,   // Add display name to the user metadata
           },
         },
       });
 
       if (signupError) {
         error = signupError.message;
+        return;
+      }
+
+      // Insert additional info into a profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')  // Replace with your actual profiles table name
+        .insert([{ id: user.id, phone: phoneNumber, display_name: name }]);
+
+      if (profileError) {
+        error = profileError.message;
         return;
       }
 
