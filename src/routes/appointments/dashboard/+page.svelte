@@ -1,5 +1,8 @@
 <script>
   import Booking from './booking.svelte';
+	import Existing from './existing.svelte';
+  import existing from './existing.svelte';
+
 </script>
 
 <main>
@@ -9,7 +12,8 @@
   </div>
 
   <br>
-  <Booking /> <!-- Load the booking component here -->
+  <Booking />
+  <Existing />
 </main>
 
 <style>
