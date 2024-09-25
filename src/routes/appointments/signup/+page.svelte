@@ -1,83 +1,78 @@
-<script lang="ts">
-    import { goto } from '$app/navigation'; // For redirecting after successful signup
-    let name = '';
-    let email = '';
-    let password = '';
-    let confirmPassword = '';
-    let error = '';
+<script>
+  import { goto } from '$app/navigation';
+  import { supabase } from '$lib/supabase.js';
+  import { onMount } from 'svelte'; // onMount is required to apply the input mask
+  import Inputmask from "inputmask"; // Import Inputmask library
   
-    const handleSignup = (e) => {
-      e.preventDefault();
-      
-      // Reset error
-      error = '';
-  
-      // Simple validation
-      if (!name || !email || !password || !confirmPassword) {
-        error = 'All fields are required.';
+  let name = '';
+  let email = '';
+  let password = '';
+  let confirmPassword = '';
+  let phoneNumber = ''; 
+  let error = '';
+
+  onMount(() => {
+    // Apply input mask for the phone number input field
+    Inputmask("0999-999-9999").mask(document.getElementById("phoneNumber"));
+  });
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    // Reset error
+    error = '';
+
+    // Simple validation
+    if (!name || !email || !password || !confirmPassword || !phoneNumber) {
+      error = 'All fields are required.';
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      error = 'Passwords do not match.';
+      return;
+    }
+
+    if (!email.includes('@')) {
+      error = 'Please provide a valid email address.';
+      return;
+    }
+
+    // Supabase sign up logic
+    try {
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            phoneNumber, // Save additional user data including phone number
+          },
+        },
+      });
+
+      if (signupError) {
+        error = signupError.message;
         return;
       }
-  
-      if (password !== confirmPassword) {
-        error = 'Passwords do not match.';
-        return;
-      }
-  
-      if (!email.includes('@')) {
-        error = 'Please provide a valid email address.';
-        return;
-      }
-  
-      // Simulate successful sign-up
+
       alert('Signed up successfully! Redirecting to login page...');
-      
-      // Redirect to login page after signup
       goto('/appointments/login');
-    };
+
+    } catch (err) {
+      error = 'An error occurred during sign up.';
+    }
+  };
 </script>
-  
-<style>
-    .signup-form {
-      max-width: 400px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #28a745;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #218838;
-    }
-    .error {
-      color: red;
-      margin-bottom: 1rem;
-    }
-</style>
-  
-<div class="signup-form">
+
+<main>
+  <div class="signup-form">
     <h2>Sign Up</h2>
-  
+
     {#if error}
       <div class="error">{error}</div>
     {/if}
-  
+
     <form on:submit={handleSignup}>
       <div>
         <label for="name">Full Name:</label>
@@ -89,7 +84,7 @@
           required
         />
       </div>
-  
+
       <div>
         <label for="email">Email Address:</label>
         <input
@@ -100,7 +95,18 @@
           required
         />
       </div>
-  
+
+      <div>
+        <label for="phoneNumber">Phone Number:</label>
+        <input
+          type="tel"
+          id="phoneNumber"
+          bind:value={phoneNumber}
+          placeholder="0912-345-6789"
+          required
+        />
+      </div>
+
       <div>
         <label for="password">Password:</label>
         <input
@@ -111,7 +117,7 @@
           required
         />
       </div>
-  
+
       <div>
         <label for="confirmPassword">Confirm Password:</label>
         <input
@@ -122,8 +128,43 @@
           required
         />
       </div>
-  
+
       <button type="submit">Sign Up</button>
     </form>
-</div>
-  
+  </div>
+</main>
+
+<style>
+  .signup-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background-color: #007bff;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .error {
+    color: red;
+    margin-bottom: 1rem;
+  }
+</style>

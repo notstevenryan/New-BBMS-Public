@@ -52,14 +52,17 @@ export const initializeFlatpickr = (onChangeCallback) => {
 };
 
 // Handle appointment booking
-export const bookAppointment = async (e) => {
+export const bookAppointment = async (e, selectedDate, selectedLocation, selectedTime, availability) => {
     e.preventDefault();
   
-    const session = supabase.auth.session();
-    if (!session) {
-      alert('Please login to book an appointment.');
-      return;
+    // Fetch the session using the updated method
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+        alert('Please login to book an appointment.');
+        return;
     }
+
   
     const userId = session.user.id;
   
@@ -73,21 +76,34 @@ export const bookAppointment = async (e) => {
       return;
     }
   
-    const { data, error } = await supabase
-      .from('appointment_slots')
-      .insert({
-        user_id: userId,  // Store user ID
-        date: selectedDate,
-        location: selectedLocation,
-        time_slot: selectedTime,
-        available_slots: availability[selectedTime] - 1,
-      });
-  
-    if (error) {
+    try {
+      // Begin transaction-like operation
+      const { data, error } = await supabase
+        .from('appointment_slots_db')
+        .insert({
+          user_id: userId,  // Store user ID
+          date: selectedDate,
+          location: selectedLocation,
+          time_slot: selectedTime,
+          available_slots: availability[selectedTime] - 1,  // Decrement the available slot
+        });
+    
+      // Log error but avoid throwing unless data is missing
+      if (error) {
+        console.error('Supabase insert error:', error.message);
+      }
+    
+      // Only show success if data exists and appointment went through
+      if (data) {
+        // Update local availability count after booking
+        availability[selectedTime] -= 1;
+        alert('Appointment booked successfully!');
+      } else {
+        alert('Failed to book the appointment. Please try again later.');
+      }
+    } catch (error) {
       console.error('Error booking appointment:', error.message);
-    } else {
-      alert('Appointment booked successfully!');
-      availability[selectedTime] -= 1;
+      alert('An unexpected error occurred. Please try again later.');
     }
   };
   
