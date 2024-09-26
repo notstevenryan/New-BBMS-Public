@@ -1,65 +1,65 @@
 <script>
-    import { onMount } from 'svelte';
-    import { fetchLocations, fetchAvailability, initializeFlatpickr, bookAppointment } from '$lib/appointmentsHelper.js';
+  import { onMount } from 'svelte';
+  import { fetchLocations, fetchAvailability, initializeFlatpickr, bookAppointment } from '$lib/appointmentsHelper.js';
   
-    let locations = [];
-    let selectedLocation = '';
-    let locationDetails = '';
-    let availability = {};
-    let selectedDate = '';
-    let selectedTime = '';
-    let donationType = '';
-    let notes = '';
-    let availableSlots = { Morning: 0, Afternoon: 0, Evening: 0 };
-    let datePickerInstance;
+  let locations = [];
+  let selectedLocation = '';
+  let locationDetails = '';
+  let availability = {};
+  let selectedDate = '';
+  let selectedTime = '';
+  let donationType = '';
+  let notes = '';
+  let availableSlots = { Morning: 0, Afternoon: 0, Evening: 0 };
+  let datePickerInstance;
   
-    const updateLocationDetails = () => {
-      const location = locations.find(loc => loc.name === selectedLocation);
-      locationDetails = location || null;
-      if (selectedDate) {
+  const updateLocationDetails = () => {
+    const location = locations.find(loc => loc.name === selectedLocation);
+    locationDetails = location || null;
+    if (selectedDate) {
+      fetchAvailability(selectedDate, selectedLocation).then(data => {
+        availability = data;
+        availableSlots = { ...availability };
+      });
+    }
+  };
+  
+  onMount(async () => {
+    locations = await fetchLocations();
+    datePickerInstance = initializeFlatpickr((selectedDates) => {
+      selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
+      if (selectedLocation) {
         fetchAvailability(selectedDate, selectedLocation).then(data => {
           availability = data;
           availableSlots = { ...availability };
         });
       }
-    };
-  
-    onMount(async () => {
-      locations = await fetchLocations();
-      datePickerInstance = initializeFlatpickr((selectedDates) => {
-        selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
-        if (selectedLocation) {
-          fetchAvailability(selectedDate, selectedLocation).then(data => {
-            availability = data;
-            availableSlots = { ...availability };
-          });
-        }
-      });
     });
+  });
 
-    function adjustedDate(date) {
-      const selected = new Date(date);
-      selected.setDate(selected.getDate() + 1);
-      return selected.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-    }
+  function adjustedDate(date) {
+    const selected = new Date(date);
+    selected.setDate(selected.getDate() + 1);
+    return selected.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+  }
   
-    const handleFormSubmit = async (e) => {
-      e.preventDefault();
-      await bookAppointment(selectedDate, selectedLocation, selectedTime, donationType, notes, availability);
-      selectedDate = '';
-      selectedLocation = '';
-      selectedTime = '';
-      donationType = '';
-      notes = '';
-    };
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    await bookAppointment(selectedDate, selectedLocation, selectedTime, donationType, notes, availability);
+    selectedDate = '';
+    selectedLocation = '';
+    selectedTime = '';
+    donationType = '';
+    notes = '';
+  };
   </script>
   
-  <main> 
-    <div class="justify-content-center" 
-      id="header" 
-      >
-        <h2>📅 Book an Appointment</h2>   
-    </div>
+<main> 
+  <div class="justify-content-center" 
+    id="header" 
+    >
+    <h2>📅 Book an Appointment</h2>   
+  </div>
     <form on:submit={handleFormSubmit} class="appointment-form" >
       <div class="form-left bg-light" style="padding: 20px; border-radius: 5px;">
         <!-- Location Selection -->
@@ -128,14 +128,14 @@
           <textarea id="notes" bind:value={notes} placeholder="Add any special instructions or notes..." style="padding: 10px; border-radius: 5px;"></textarea>
         </div>
   
-        <div class="form-group">
-          <button type="submit" style="border-radius: 5px;" disabled={!selectedTime || !selectedLocation || !selectedDate}>
+      <div class="form-group">
+        <button type="submit" style="border-radius: 5px;" disabled={!selectedTime || !selectedLocation || !selectedDate}>
             Book Appointment
-          </button>
-        </div>
+        </button>
       </div>
-    </form>
-  </main>
+    </div>
+  </form>
+</main>
   
 <style>
   #header {
