@@ -10,62 +10,66 @@
   let error = '';
 
   const handleSignup = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Reset error
-    error = '';
+  error = '';
 
-    // Simple validation
-    if (!name || !email || !password || !confirmPassword || !phoneNumber) {
-      error = 'All fields are required.';
-      return;
-    }
+  if (!name || !email || !password || !confirmPassword || !phoneNumber) {
+    error = 'All fields are required.';
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      error = 'Passwords do not match.';
-      return;
-    }
+  if (password !== confirmPassword) {
+    error = 'Passwords do not match.';
+    return;
+  }
 
-    if (!email.includes('@')) {
-      error = 'Please provide a valid email address.';
-      return;
-    }
+  if (!email.includes('@')) {
+    error = 'Please provide a valid email address.';
+    return;
+  }
 
-    // Supabase sign up logic
-    try {
-      const { user, error: signupError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            phone: phoneNumber,  // Add phone number to the user metadata
-            display_name: name,   // Add display name to the user metadata
-          },
+  // Supabase sign up logic
+  try {
+    const { data, error: signupError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: name,
+          phone: phoneNumber,
         },
-      });
+      },
+    });
 
-      if (signupError) {
-        error = signupError.message;
-        return;
-      }
+    if (signupError) {
+      error = signupError.message;
+      return;
+    }
 
-      // Insert additional info into a profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')  // Replace with your actual profiles table name
-        .insert([{ id: user.id, phone: phoneNumber, display_name: name }]);
+    // Ensure `user.id` exists before proceeding
+    if (!data.user) {
+      error = 'User signup failed. No user ID returned.';
+      return;
+    }
 
-      if (profileError) {
-        error = profileError.message;
-        return;
-      }
+    // Insert additional info into the profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert([{ id: data.user.id, phone: phoneNumber, display_name: name }]);
 
-      alert('Signed up successfully! Redirecting to login page...');
+    if (profileError) {
+      error = profileError.message;
+      return;
+    }
+
+    alert('Signed up successfully! Redirecting to login page...');
       goto('/appointments/login');
-
     } catch (err) {
       error = 'An error occurred during sign up.';
     }
   };
+
 </script>
 
 <main>
