@@ -36,6 +36,12 @@
         }
       });
     });
+
+    function adjustedDate(date) {
+      const selected = new Date(date);
+      selected.setDate(selected.getDate() + 1);
+      return selected.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    }
   
     const handleFormSubmit = async (e) => {
       e.preventDefault();
@@ -75,14 +81,14 @@
           {/if}
         </div>
   
-        <!-- Flatpickr Date Picker -->
-        <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
-        <div class="form-group" id="date-picker">
-          <label for="date"><b>Select Date:</b></label>
-        </div>
-        <p style="padding-top: 20px;"> 
-          {selectedDate ? `Selected Date: ${selectedDate}` : 'No date selected yet.'}
-        </p>
+      <!-- Flatpickr Date Picker -->
+      <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
+      <div class="form-group" id="date-picker">
+        <label for="date"><b>Select Date:</b></label>
+      </div>
+      <p style="padding-top: 20px;">
+        {selectedDate ? `Selected Date: ${adjustedDate(selectedDate)}` : 'No date selected yet.'}
+      </p>
       </div>
   
       <div class="form-right bg-light" style="padding: 20px; border-radius: 5px;">

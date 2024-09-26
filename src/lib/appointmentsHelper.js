@@ -51,6 +51,8 @@ export const initializeFlatpickr = (onChangeCallback) => {
     });
 };
 
+
+
 // Handle appointment booking
 export const bookAppointment = async (e, selectedDate, selectedLocation, selectedTime, availability) => {
     e.preventDefault();
