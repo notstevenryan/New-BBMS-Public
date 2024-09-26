@@ -59,13 +59,26 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
   }
 
   // Fetch the session
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session) {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !sessionData?.session) {
     alert('Please login to book an appointment.');
     return;
   }
 
-  const userId = session.user.id;
+  const userId = sessionData.session.user.id;
+
+  // Fetch user profile details
+  const { data: userProfile, error: profileError } = await supabase
+    .from('profiles')
+    .select('display_name, phone')
+    .eq('id', userId)
+    .single();
+
+  if (profileError) {
+    alert('Failed to retrieve user profile.');
+    return;
+  }
 
   // Validate input fields
   if (!selectedDate || !selectedLocation || !selectedTime || !donationType) {
@@ -80,53 +93,25 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
   }
 
   try {
-    // Insert booking into user_appointments
-    const { error: bookingError } = await supabase
-      .from('user_appointments')
-      .insert([{
-        user_id: userId,
-        date: selectedDate,
-        location: selectedLocation,
-        time_slot: selectedTime,
-        donation_type: donationType,
-        notes: notes || null
-      }]);
+    // Begin transaction
+    const { error: transactionError } = await supabase
+      .from('user_appointments') // Insert directly into user_appointments
+      .insert([
+        {
+          user_id: userId,
+          display_name: userProfile.display_name,
+          phone: userProfile.phone,
+          date: selectedDate,
+          location: selectedLocation,
+          time_slot: selectedTime,
+          donation_type: donationType,  // Include donationType
+          notes: notes || null           // Include notes
+        }
+      ]);
 
-    if (bookingError) {
-      console.error('Booking error:', bookingError.message);
+    if (transactionError) {
+      console.error('Transaction error:', transactionError.message);
       alert('Failed to book the appointment. Please try again later.');
-      return;
-    }
-
-    // Fetch the current available slots
-    const { data: slotData, error: slotError } = await supabase
-      .from('appointment_slots')
-      .select('available_slots')
-      .eq('date', selectedDate)
-      .eq('location', selectedLocation)
-      .eq('time_slot', selectedTime)
-      .single(); // Get a single record
-
-    if (slotError || !slotData) {
-      console.error('Error fetching available slots:', slotError?.message);
-      alert('Failed to update availability. Please try again later.');
-      return;
-    }
-
-    // Decrease the available slots by 1
-    const updatedSlots = slotData.available_slots - 1;
-
-    // Update available slots in appointment_slots
-    const { error: updateError } = await supabase
-      .from('appointment_slots')
-      .update({ available_slots: updatedSlots })
-      .eq('date', selectedDate)
-      .eq('location', selectedLocation)
-      .eq('time_slot', selectedTime);
-
-    if (updateError) {
-      console.error('Error updating available slots:', updateError.message);
-      alert('Failed to update availability. Please try again later.');
     } else {
       // Update local availability count after booking
       availability[selectedTime] -= 1;
