@@ -44,15 +44,16 @@
   }
   
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    await bookAppointment(selectedDate, selectedLocation, selectedTime, donationType, notes, availability);
+    e.preventDefault(); // Make sure to prevent default behavior here
+    await bookAppointment(e, selectedDate, selectedLocation, selectedTime, availability, donationType, notes); // Pass event as the first argument
     selectedDate = '';
     selectedLocation = '';
     selectedTime = '';
     donationType = '';
     notes = '';
   };
-  </script>
+
+</script>
   
 <main> 
   <div class="justify-content-center" 
@@ -124,7 +125,7 @@
   
         <!-- Notes Section -->
         <div class="form-group">
-          <label for="notes"><b>Notes (Optional):</b></label>
+          <label for="notes"><b>Notes  (n/a if none):</b></label>
           <textarea id="notes" bind:value={notes} placeholder="Add any special instructions or notes..." style="padding: 10px; border-radius: 5px;"></textarea>
         </div>
   
