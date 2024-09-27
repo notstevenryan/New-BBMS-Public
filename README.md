@@ -37,6 +37,7 @@ You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
-KNOWN ISSUES
-> Date mismatch in the appointment booking section
-> Duplicate locations listed in the blood bank locator
+```KNOWN ISSUES
+- Date mismatch in the appointment booking section
+- Duplicate locations listed in the blood bank locator
+```
