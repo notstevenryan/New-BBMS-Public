@@ -39,27 +39,20 @@ export const fetchAvailability = async (date, location) => {
   }
 };
 
-
 // Handle appointment booking
 export const bookAppointment = async (e, selectedDate, selectedLocation, selectedTime, availability, donationType, notes) => {
-
-  // Log the date to see what is being passed
   console.log('Selected Date:', selectedDate); // Debugging
   if (e && e.preventDefault) {
     e.preventDefault();
   }
 
-  // Fetch the session
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-
   if (sessionError || !sessionData?.session) {
     alert('Please login to book an appointment.');
     return;
   }
 
   const userId = sessionData.session.user.id;
-
-  // Fetch user profile details
   const { data: userProfile, error: profileError } = await supabase
     .from('profiles')
     .select('display_name, phone')
@@ -71,46 +64,60 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
     return;
   }
 
-  // Validate input fields
   if (!selectedDate || !selectedLocation || !selectedTime || !donationType) {
     alert('Please fill all fields.');
     return;
   }
 
-  // Check availability
   if (availability[selectedTime] === 0) {
     alert('No available slots for the selected time.');
     return;
   }
 
   try {
-    // Begin transaction
+    // Begin transaction to insert the appointment
     const { error: transactionError } = await supabase
-      .from('user_appointments') // Insert directly into user_appointments
-      .insert([
-        {
-          user_id: userId,
-          display_name: userProfile.display_name,
-          phone: userProfile.phone,
-          date: selectedDate,
-          location: selectedLocation,
-          time_slot: selectedTime,
-          donation_type: donationType,  // Include donationType
-          notes: notes || null          // Include notes
-        }
-      ]);
-
+      .from('user_appointments')
+      .insert([{
+        user_id: userId,
+        display_name: userProfile.display_name,
+        phone: userProfile.phone,
+        date: selectedDate,
+        location: selectedLocation,
+        time_slot: selectedTime,
+        donation_type: donationType,
+        notes: notes || null
+      }]);
+  
     if (transactionError) {
       console.error('Transaction error:', transactionError.message);
       alert('Failed to book the appointment. Please try again later.');
+      return; // Early return to prevent further execution
+    }
+  
+    // Update available slots in appointment_slots table
+    const { error: updateError } = await supabase
+      .from('appointment_slots')
+      .update({ available_slots: availability[selectedTime] - 1 }) // Decrease by 1
+      .eq('date', selectedDate)
+      .eq('location', selectedLocation)
+      .eq('time_slot', selectedTime);
+  
+    if (updateError) {
+      console.error('Error updating available slots:', updateError.message);
+      // Optionally, delete the appointment if the update fails
+      await supabase.from('user_appointments').delete().match({ user_id: userId, date: selectedDate, location: selectedLocation, time_slot: selectedTime });
+      alert('Failed to update available slots. Appointment booking rolled back.');
     } else {
       // Update local availability count after booking
-      availability[selectedTime] -= 1;
+      availability[selectedTime] -= 1; // Decrease local availability count
       alert('Appointment booked successfully!');
     }
   } catch (error) {
     console.error('Error booking appointment:', error.message);
     alert('An unexpected error occurred. Please try again later.');
   }
+  
 };
+
 
