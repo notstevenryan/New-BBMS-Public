@@ -1,7 +1,6 @@
 // src/lib/appointmentsHelper.js
 
 import { supabase } from '$lib/supabase.js';
-import flatpickr from 'flatpickr';
 
 // Holds availability for the selected date
 export let availability = {};
@@ -40,20 +39,12 @@ export const fetchAvailability = async (date, location) => {
   }
 };
 
-// Initialize Flatpickr
-export const initializeFlatpickr = (onChangeCallback) => {
-  const today = new Date();
-  today.setDate(today.getDate() + 1); // Set to tomorrow
-
-  return flatpickr('#date-picker', {
-    inline: true,
-    minDate: today.toISOString().split('T')[0],
-    onChange: onChangeCallback
-  });
-};
 
 // Handle appointment booking
 export const bookAppointment = async (e, selectedDate, selectedLocation, selectedTime, availability, donationType, notes) => {
+
+  // Log the date to see what is being passed
+  console.log('Selected Date:', selectedDate); // Debugging
   if (e && e.preventDefault) {
     e.preventDefault();
   }
@@ -105,7 +96,7 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
           location: selectedLocation,
           time_slot: selectedTime,
           donation_type: donationType,  // Include donationType
-          notes: notes || null           // Include notes
+          notes: notes || null          // Include notes
         }
       ]);
 

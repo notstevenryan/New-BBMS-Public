@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchLocations, fetchAvailability, initializeFlatpickr, bookAppointment } from '$lib/appointmentsHelper.js';
+  import { fetchLocations, fetchAvailability, bookAppointment } from '$lib/appointmentsHelper.js';
+  import { initializeFlatpickr } from '$lib/flatpickr.js'
   
   let locations = [];
   let selectedLocation = '';
@@ -38,21 +39,28 @@
   });
 
   function adjustedDate(date) {
-    const selected = new Date(date);
-    selected.setDate(selected.getDate() + 1);
-    return selected.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    const localDate = new Date(date);
+    localDate.setHours(localDate.getHours() + 8); // Adjust for UTC+8
+    return localDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
   }
+
   
   const handleFormSubmit = async (e) => {
-    e.preventDefault(); // Make sure to prevent default behavior here
-    await bookAppointment(e, selectedDate, selectedLocation, selectedTime, availability, donationType, notes); // Pass event as the first argument
-    selectedDate = '';
-    selectedLocation = '';
-    selectedTime = '';
-    donationType = '';
-    notes = '';
-  };
+  e.preventDefault(); // Prevent default behavior
 
+  // Adjust selected date for UTC+8:00
+  const adjustedDate = new Date(selectedDate);
+  adjustedDate.setHours(adjustedDate.getHours() + 8); // Adjust for UTC+8
+
+  await bookAppointment(e, adjustedDate.toISOString().split('T')[0], selectedLocation, selectedTime, availability, donationType, notes);
+  
+  // Reset fields
+  selectedDate = '';
+  selectedLocation = '';
+  selectedTime = '';
+  donationType = '';
+  notes = '';
+};
 </script>
   
 <main> 
@@ -87,9 +95,9 @@
       <div class="form-group" id="date-picker">
         <label for="date"><b>Select Date:</b></label>
       </div>
-      <p style="padding-top: 20px;">
-        {selectedDate ? `Selected Date: ${adjustedDate(selectedDate)}` : 'No date selected yet.'}
-      </p>
+        <p style="padding-top: 20px;">
+          {selectedDate ? `Selected Date: ${adjustedDate(selectedDate)}` : 'No date selected yet.'}
+        </p>
       </div>
   
       <div class="form-right bg-light" style="padding: 20px; border-radius: 5px;">
