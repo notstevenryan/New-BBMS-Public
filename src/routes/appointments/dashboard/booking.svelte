@@ -70,7 +70,7 @@
     <h2>📅 Book an Appointment</h2>   
   </div>
     <form on:submit={handleFormSubmit} class="appointment-form" >
-      <div class="form-left bg-light" style="padding: 20px; border-radius: 5px;">
+      <div class="form-left">
         <!-- Location Selection -->
         <div class="form-group">
           <label for="location"><b>Location:</b></label>
@@ -100,7 +100,7 @@
         </p>
       </div>
   
-      <div class="form-right bg-light" style="padding: 20px; border-radius: 5px;">
+      <div class="form-right">
         <!-- Time Window Selection -->
         <div class="form-group">
           <label for="time"><b>Time Slot:</b></label>
