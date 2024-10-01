@@ -1,4 +1,4 @@
-<script>
+<script lang="js">
   import { goto } from '$app/navigation';
   import { supabase } from '$lib/supabase'; // Make sure to import your Supabase client
   
@@ -20,18 +20,14 @@
       if (isSignup) {
         response = await supabase.auth.signUp({ email, password });
         if (response.error) throw response.error;
-        
-        alert('Signed up successfully! Redirecting to login.');
-        // Redirect the user to the login page or handle the login directly
-        goto('/login'); // Change the route as per your app structure
+        alert('Signed up successfully! Now log in.');
       } else {
         response = await supabase.auth.signInWithPassword({ email, password });
         if (response.error) throw response.error;
 
         alert('Logged in successfully! Redirecting...');
-        goto('/appointments/dashboard'); // Successful login redirects
+        goto('/appointments/dashboard');
       }
-
     } catch (error) {
   if (error instanceof Error) {
     alert(`Error: ${error.message}`);
@@ -49,29 +45,26 @@
 <main>
 
 
-  <div class="auth-form">
-    <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
-    <form on:submit={handleAuth}>
-      <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" bind:value={password} placeholder="Enter your password" required />
-      </div>
-      <button class="bg-primary" type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
-    </form>
-  
-    <p>{isSignup ? 'Already have an account?' : 'Don’t have an account?'} 
-      <a href="/appointments/signup/">
-        {isSignup ? 'Login' : 'Sign up'}
-      </a>
-    </p>
-  </div> 
+<div class="auth-form">
+  <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
+  <form on:submit={handleAuth}>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" bind:value={password} placeholder="Enter your password" required />
+    </div>
+    <button class="bg-primary" type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
+  </form>
 
-</main>
-
+  <p>{isSignup ? 'Already have an account?' : 'Don’t have an account?'} 
+    <a href="/appointments/signup/" on:click|preventDefault={toggleAuthMode}>
+      {isSignup ? 'Login' : 'Sign up'}
+    </a>
+  </p>
+</div>
 
 <style>
   .auth-form {

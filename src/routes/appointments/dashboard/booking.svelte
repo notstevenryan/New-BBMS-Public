@@ -1,7 +1,7 @@
 <script>
-  import { onMount } from 'svelte';
-  import { fetchLocations, fetchAvailability, bookAppointment } from '$lib/appointmentsHelper.js';
-  import { initializeFlatpickr } from '$lib/flatpickr.js'
+    import { onMount } from 'svelte';
+    import { fetchLocations, fetchAvailability, initializeFlatpickr, bookAppointment } from '$lib/appointmentsHelper.js';
+    import { supabase } from '$lib/supabase.js';
   
   let locations = [];
   let selectedLocation = '';
@@ -25,43 +25,37 @@
     }
   };
   
-  onMount(async () => {
-    locations = await fetchLocations();
-    datePickerInstance = initializeFlatpickr((selectedDates) => {
-      selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
-      if (selectedLocation) {
-        fetchAvailability(selectedDate, selectedLocation).then(data => {
-          availability = data;
-          availableSlots = { ...availability };
-        });
-      }
+    onMount(async () => {
+      locations = await fetchLocations();
+      datePickerInstance = initializeFlatpickr((selectedDates) => {
+        selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
+        if (selectedLocation) {
+          fetchAvailability(selectedDate, selectedLocation).then(data => {
+            availability = data;
+            availableSlots = { ...availability };
+          });
+        }
+      });
     });
-  });
+  
+    const handleFormSubmit = async (e) => {
+  e.preventDefault();
+  const success = await bookAppointment(e, selectedDate, selectedLocation, selectedTime, availability);
 
-  function adjustedDate(date) {
-    const localDate = new Date(date);
-    localDate.setHours(localDate.getHours() + 24); // Adjust for UTC+8
-    return localDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+  if (success) {
+    // Clear form and show success message
+    selectedDate = '';
+    selectedLocation = '';
+    selectedTime = '';
+    donationType = '';
+    notes = '';
+    alert('Appointment successfully booked!');
+  } else {
+    alert('Failed to book appointment.');
   }
-
-  
-  const handleFormSubmit = async (e) => {
-  e.preventDefault(); // Prevent default behavior
-
-  // Adjust selected date for UTC+8:00
-  const adjustedDate = new Date(selectedDate);
-  adjustedDate.setHours(adjustedDate.getHours() + 8); // Adjust for UTC+8
-
-  await bookAppointment(e, adjustedDate.toISOString().split('T')[0], selectedLocation, selectedTime, availability, donationType, notes);
-  
-  // Reset fields
-  selectedDate = '';
-  selectedLocation = '';
-  selectedTime = '';
-  donationType = '';
-  notes = '';
 };
-</script>
+
+  </script>
   
 <main> 
   <div class="justify-content-center" 

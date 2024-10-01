@@ -39,7 +39,6 @@
       </div>
     </div>
     <hr class="my-4" />
-    <p class="text-center footer-copy">&copy; 2023 For Capstone Use Only.</p>
   </div>
 </footer>
 <!-- END FOOTER -->
