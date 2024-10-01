@@ -113,5 +113,3 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
     alert('An unexpected error occurred. Please try again later.');
   }
 };
-
-

@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { fetchLocations, fetchAvailability, bookAppointment } from '$lib/appointmentsHelper.js';
-  import { initializeFlatpickr } from '$lib/flatpickr.js'
+  import { initializeFlatpickr } from '$lib/flatpickr.js';
   
   let locations = [];
   let selectedLocation = '';
@@ -13,7 +13,7 @@
   let notes = '';
   let availableSlots = { Morning: 0, Afternoon: 0, Evening: 0 };
   let datePickerInstance;
-  
+
   const updateLocationDetails = () => {
     const location = locations.find(loc => loc.name === selectedLocation);
     locationDetails = location || null;
@@ -24,44 +24,59 @@
       });
     }
   };
-  
+
   onMount(async () => {
     locations = await fetchLocations();
     datePickerInstance = initializeFlatpickr((selectedDates) => {
-      selectedDate = selectedDates[0]?.toISOString().split('T')[0] || '';
-      if (selectedLocation) {
-        fetchAvailability(selectedDate, selectedLocation).then(data => {
-          availability = data;
-          availableSlots = { ...availability };
-        });
+      // Get the selected date from Flatpickr
+      selectedDate = selectedDates[0];
+
+      // Check if a selected date exists
+      if (selectedDate) {
+        // Adjust the selected date for UTC+8
+        const adjustedSelectedDate = new Date(selectedDate);
+        adjustedSelectedDate.setHours(adjustedSelectedDate.getHours() + 8); // Adjust to UTC+8
+
+        // Format the adjusted date for fetching availability
+        const formattedDate = adjustedSelectedDate.toISOString().split('T')[0];
+
+        // Fetch availability with the formatted date
+        if (selectedLocation) {
+          fetchAvailability(formattedDate, selectedLocation).then(data => {
+            availability = data;
+            availableSlots = { ...availability };
+          });
+        }
       }
     });
   });
 
+
+  // Adjusts the date by adding 1 day
   function adjustedDate(date) {
     const localDate = new Date(date);
-    localDate.setHours(localDate.getHours() + 24); // Adjust for UTC+8
+    localDate.setDate(localDate.getDate() + 1); // Add 1 day
     return localDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
   }
 
-  
   const handleFormSubmit = async (e) => {
-  e.preventDefault(); // Prevent default behavior
+    e.preventDefault(); // Prevent default behavior
 
-  // Adjust selected date for UTC+8:00
-  const adjustedDate = new Date(selectedDate);
-  adjustedDate.setHours(adjustedDate.getHours() + 8); // Adjust for UTC+8
+    // Adjust selected date for UTC+8:00
+    const adjusted = adjustedDate(selectedDate); // Use the adjustedDate function
 
-  await bookAppointment(e, adjustedDate.toISOString().split('T')[0], selectedLocation, selectedTime, availability, donationType, notes);
-  
-  // Reset fields
-  selectedDate = '';
-  selectedLocation = '';
-  selectedTime = '';
-  donationType = '';
-  notes = '';
-};
+    await bookAppointment(e, adjusted, selectedLocation, selectedTime, availability, donationType, notes);
+    
+    // Reset fields
+    selectedDate = '';
+    selectedLocation = '';
+    selectedTime = '';
+    donationType = '';
+    notes = '';
+  };
 </script>
+
+
   
 <main> 
   <div class="justify-content-center" 
