@@ -6,7 +6,9 @@
   let filteredAppointments = [];
   let sortField = 'date'; // Set default sort field to date
   let sortOrder = 'asc';  // Default sort order
-  let statusFilter = '';
+
+  // Declare the statusFilter variable
+  let statusFilter = '';  // Default filter value
 
   // Fetch appointments on mount
   onMount(async () => {
@@ -66,7 +68,7 @@
     } else {
       filteredAppointments = appointments.filter(app => app.status.toLowerCase() === statusFilter.toLowerCase());
     }
-    
+
     // Re-sort after filtering
     sortAppointments(sortField);
   };
@@ -86,13 +88,14 @@
     </select>
   </div>
 
-  <div class="container-flex">
+  <!-- Scrollable table container -->
+  <div class="table-container">
     {#if filteredAppointments.length > 0}
       <table class="appointments-table">
         <thead>
           <tr>
             <th on:click={() => sortAppointments('date')}>Date {sortField === 'date' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
-            <th on:click={() => sortAppointments('display_name')}>Display Name {sortField === 'display_name' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+            <th on:click={() => sortAppointments('display_name')}>Name {sortField === 'display_name' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
             <th on:click={() => sortAppointments('phone')}>Phone {sortField === 'phone' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
             <th on:click={() => sortAppointments('location')}>Location {sortField === 'location' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
             <th on:click={() => sortAppointments('time_slot')}>Time Slot {sortField === 'time_slot' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
@@ -125,6 +128,13 @@
     color: #333;
   }
 
+  /* Container for the scrollable table */
+  .table-container {
+    max-height: 400px; /* Adjust this height as needed */
+    overflow-y: auto;
+    margin: 20px 0;
+  }
+
   table.appointments-table {
     width: 100%;
     border-collapse: collapse;
@@ -143,6 +153,9 @@
     background-color: #f2f2f2;
     color: #333;
     font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
 
   table.appointments-table tr:nth-child(even) {
