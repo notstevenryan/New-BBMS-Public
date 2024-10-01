@@ -4,11 +4,9 @@
 
   let appointments = [];
   let filteredAppointments = [];
-  let sortField = 'date'; // Set default sort field to date
+  let sortField = 'date'; // Default sort field
   let sortOrder = 'asc';  // Default sort order
-
-  // Declare the statusFilter variable
-  let statusFilter = '';  // Default filter value
+  let statusFilter = '';   // Status filter value
 
   // Fetch appointments on mount
   onMount(async () => {
@@ -21,56 +19,82 @@
 
     const userId = sessionData.session.user.id;
 
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('user_appointments')
       .select('date, display_name, phone, location, time_slot, status')
       .eq('user_id', userId);
 
     if (error) {
       console.error('Error fetching appointments:', error.message);
-    } else {
-      appointments = data;
-      filteredAppointments = data;
-
-      // Sort appointments by date initially
-      sortAppointments('date');
+      return;
     }
+
+    appointments = data;
+    filteredAppointments = data;
+    sortAppointments('date'); // Sort by date initially
   });
 
   // Sorting function
   const sortAppointments = (field) => {
-    if (sortField === field) {
-      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortField = field;
-      sortOrder = 'asc';
-    }
+    sortOrder = (sortField === field) ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+    sortField = field;
 
-    filteredAppointments = [...filteredAppointments].sort((a, b) => {
-      // Convert date strings to Date objects for comparison
+    filteredAppointments.sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
 
       if (field === 'date') {
         return sortOrder === 'desc' ? dateA - dateB : dateB - dateA;
       }
-
-      if (a[field] < b[field]) return sortOrder === 'asc' ? -1 : 1;
-      if (a[field] > b[field]) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
+      return (a[field] < b[field] ? -1 : 1) * (sortOrder === 'asc' ? 1 : -1);
     });
+  };
+
+  // Cancel appointment function
+  const cancelAppointment = async (appointment) => {
+    if (!confirm("Are you sure you want to cancel this appointment?")) return;
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user?.id;
+
+    if (!userId) {
+      alert("Failed to cancel the appointment: no user session found.");
+      return;
+    }
+
+    console.log('Attempting to cancel appointment:', appointment);
+
+    const formattedDate = new Date(appointment.date).toISOString().split('T')[0];
+    const { data, error } = await supabase
+      .from('user_appointments')
+      .update({ status: 'canceled' })
+      .eq('user_id', userId)
+      .eq('date', formattedDate)
+      .eq('location', appointment.location)
+      .eq('time_slot', appointment.time_slot);
+
+    if (error) {
+      alert('Failed to cancel the appointment.');
+      console.error('Error cancelling appointment:', error.message);
+      } 
+    else {
+      alert('Appointment canceled successfully!');
+      // Update the local state
+      filteredAppointments = filteredAppointments.map(app =>
+        app.date === appointment.date && app.location === appointment.location && app.time_slot === appointment.time_slot
+          ? { ...app, status: 'canceled' }
+          : app
+      );
+    }
   };
 
   // Filter by status
   const filterByStatus = () => {
-    if (statusFilter === '') {
-      filteredAppointments = appointments;
-    } else {
-      filteredAppointments = appointments.filter(app => app.status.toLowerCase() === statusFilter.toLowerCase());
-    }
+    filteredAppointments = statusFilter
+      ? appointments.filter(app => app.status.toLowerCase() === statusFilter.toLowerCase())
+      : appointments;
 
-    // Re-sort after filtering
-    sortAppointments(sortField);
+    sortAppointments(sortField); // Re-sort after filtering
   };
 </script>
 
@@ -100,6 +124,7 @@
             <th on:click={() => sortAppointments('location')}>Location {sortField === 'location' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
             <th on:click={() => sortAppointments('time_slot')}>Time Slot {sortField === 'time_slot' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
             <th on:click={() => sortAppointments('status')}>Status {sortField === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+            <th>Cancel</th>
           </tr>
         </thead>
         <tbody>
@@ -111,6 +136,11 @@
               <td>{appointment.location}</td>
               <td>{appointment.time_slot}</td>
               <td class="status-{appointment.status.toLowerCase()}">{appointment.status}</td>
+              <td>
+                {#if appointment.status !== 'canceled'}
+                  <button on:click={() => cancelAppointment(appointment)}>Cancel</button>
+                {/if}
+              </td>
             </tr>
           {/each}
         </tbody>
@@ -193,5 +223,18 @@
   p {
     text-align: center;
     color: #666;
+  }
+
+  button {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #c82333;
   }
 </style>
