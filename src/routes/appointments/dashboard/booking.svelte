@@ -14,7 +14,6 @@
   let availableSlots = { Morning: 0, Afternoon: 0, Evening: 0 };
   let datePickerInstance;
   
-  // Location
   const updateLocationDetails = () => {
     const location = locations.find(loc => loc.name === selectedLocation);
     locationDetails = location || null;
@@ -26,7 +25,6 @@
     }
   };
   
-  // Flatpickr
   onMount(async () => {
     locations = await fetchLocations();
     datePickerInstance = initializeFlatpickr((selectedDates) => {
@@ -46,26 +44,13 @@
     return localDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
   }
 
-
-  //Sveltekit Calendar
-  const config = {
-  kit: {
-    target: "#svelte",
-    vite: {
-      ssr: {
-        noExternal: [ 'dayjs' ]
-      }
-    }
-  }
-}
-
-  // Form handling
+  
   const handleFormSubmit = async (e) => {
   e.preventDefault(); // Prevent default behavior
 
   // Adjust selected date for UTC+8:00
   const adjustedDate = new Date(selectedDate);
-  adjustedDate.setHours(adjustedDate.getHours() + 24); // Adjust for UTC+8
+  adjustedDate.setHours(adjustedDate.getHours() + 8); // Adjust for UTC+8
 
   await bookAppointment(e, adjustedDate.toISOString().split('T')[0], selectedLocation, selectedTime, availability, donationType, notes);
   
