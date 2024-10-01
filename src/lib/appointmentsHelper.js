@@ -115,4 +115,3 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
 };
 
 
-
