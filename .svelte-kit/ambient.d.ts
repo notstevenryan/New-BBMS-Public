@@ -43,7 +43,7 @@ declare module '$env/static/private' {
 	export const DriverData: string;
 	export const DXSDK_DIR: string;
 	export const EDITOR: string;
-	export const EFC_8796: string;
+	export const EFC_7216: string;
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GIT_ASKPASS: string;
@@ -69,6 +69,7 @@ declare module '$env/static/private' {
 	export const npm_config_node_gyp: string;
 	export const npm_config_noproxy: string;
 	export const npm_config_npm_version: string;
+	export const npm_config_open: string;
 	export const npm_config_prefix: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_user_agent: string;
@@ -162,7 +163,7 @@ declare module '$env/dynamic/private' {
 		DriverData: string;
 		DXSDK_DIR: string;
 		EDITOR: string;
-		EFC_8796: string;
+		EFC_7216: string;
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GIT_ASKPASS: string;
@@ -188,6 +189,7 @@ declare module '$env/dynamic/private' {
 		npm_config_node_gyp: string;
 		npm_config_noproxy: string;
 		npm_config_npm_version: string;
+		npm_config_open: string;
 		npm_config_prefix: string;
 		npm_config_userconfig: string;
 		npm_config_user_agent: string;
