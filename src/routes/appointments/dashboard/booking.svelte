@@ -88,14 +88,16 @@
       <!-- Fixed Location Display -->
       <div class="form-group">
         <label for="location"><b>Location:</b></label>
-        {#if locationDetails}
-          <p><b>Name:</b> {locationDetails.name}</p>
-          <p><b>Address:</b> {locationDetails.address}</p>
-          <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
-          <p><b>Email:</b> {locationDetails.email}</p>
-        {:else}
-          <p>Loading location details...</p>
-        {/if}
+        <hr class="dashed">
+          {#if locationDetails}
+            <p><b>Name:</b> {locationDetails.name}</p>
+            <p><b>Address:</b> {locationDetails.address}</p>
+            <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
+            <p><b>Email:</b> {locationDetails.email}</p>
+          {:else}
+            <p>Loading location details...</p>
+          {/if}
+          <hr class="dashed">
       </div>
 
       <!-- Flatpickr Date Picker -->
