@@ -46,6 +46,40 @@
     });
   };
 
+  const cancelAppointment = async (appointment) => {
+  const confirmCancel = confirm("Are you sure you want to cancel this appointment?");
+  if (!confirmCancel) return;
+
+  const { error } = await supabase
+    .from('user_appointments')
+    .update({ status: 'canceled' })
+    .eq('date', appointment.date)
+    .eq('display_name', appointment.display_name)
+    .eq('location', appointment.location)
+    .eq('time_slot', appointment.time_slot);
+
+  if (error) {
+    console.error('Error canceling appointment:', error.message);
+    alert('Failed to cancel appointment.');
+    return;
+  }
+
+  // Update the local state reactively
+  appointment.status = 'canceled';
+  filteredAppointments = filteredAppointments.map(app =>
+    app.date === appointment.date &&
+    app.display_name === appointment.display_name &&
+    app.location === appointment.location &&
+    app.time_slot === appointment.time_slot
+      ? { ...app, status: 'canceled' }
+      : app
+  );
+
+  paginatedAppointments = [...filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)];
+};
+
+
+
   const filterByStatus = () => {
     filteredAppointments = statusFilter
       ? appointments.filter(app => app.status.toLowerCase() === statusFilter.toLowerCase())
@@ -93,6 +127,7 @@
             <th on:click={() => sortAppointments('location')}>Location</th>
             <th on:click={() => sortAppointments('time_slot')}>Time Slot</th>
             <th on:click={() => sortAppointments('status')}>Status</th>
+            <th on:click={() => sortAppointments('status')}>Cancel</th>
           </tr>
         </thead>
         <tbody>
