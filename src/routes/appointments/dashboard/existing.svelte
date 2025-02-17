@@ -138,6 +138,11 @@
               <td>{appointment.location}</td>
               <td>{appointment.time_slot}</td>
               <td class="status-{appointment.status.toLowerCase()}">{appointment.status}</td>
+              <td>
+                {#if appointment.status !== 'canceled' && appointment.status !== 'completed'}
+                  <button on:click={() => cancelAppointment(appointment)}>Cancel</button>
+                {/if}
+              </td>
             </tr>
           {/each}
         </tbody>
