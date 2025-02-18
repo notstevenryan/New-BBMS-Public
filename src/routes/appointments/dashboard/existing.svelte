@@ -22,7 +22,7 @@
     const userId = sessionData.session.user.id;
     const { data, error } = await supabase
       .from('user_appointments')
-      .select('date, display_name, location, time_slot, status')
+      .select('date, location, time_slot, status, donation_type, numpax')
       .eq('user_id', userId);
 
     if (error) {
@@ -30,8 +30,8 @@
       return;
     }
 
-    appointments = data || []; // Ensure it's always an array
-    filterByStatus(); // Apply initial filtering and sorting
+    appointments = data || [];
+    filterByStatus();
   });
 
   const sortAppointments = (field) => {
@@ -42,53 +42,47 @@
       if (field === 'date') {
         return (new Date(a.date) - new Date(b.date)) * (sortOrder === 'asc' ? 1 : -1);
       }
-      return a[field].toLowerCase().localeCompare(b[field].toLowerCase()) * (sortOrder === 'asc' ? 1 : -1);
+      return a[field].toString().localeCompare(b[field].toString()) * (sortOrder === 'asc' ? 1 : -1);
     });
   };
 
   const cancelAppointment = async (appointment) => {
-  const confirmCancel = confirm("Are you sure you want to cancel this appointment?");
-  if (!confirmCancel) return;
+    const confirmCancel = confirm("Are you sure you want to cancel this appointment?");
+    if (!confirmCancel) return;
 
-  const { error } = await supabase
-    .from('user_appointments')
-    .update({ status: 'canceled' })
-    .eq('date', appointment.date)
-    .eq('display_name', appointment.display_name)
-    .eq('location', appointment.location)
-    .eq('time_slot', appointment.time_slot);
+    const { error } = await supabase
+      .from('user_appointments')
+      .update({ status: 'canceled' })
+      .eq('date', appointment.date)
+      .eq('location', appointment.location)
+      .eq('time_slot', appointment.time_slot);
 
-  if (error) {
-    console.error('Error canceling appointment:', error.message);
-    alert('Failed to cancel appointment.');
-    return;
-  }
+    if (error) {
+      console.error('Error canceling appointment:', error.message);
+      alert('Failed to cancel appointment.');
+      return;
+    }
 
-  // Update the local state reactively
-  appointment.status = 'canceled';
-  filteredAppointments = filteredAppointments.map(app =>
-    app.date === appointment.date &&
-    app.display_name === appointment.display_name &&
-    app.location === appointment.location &&
-    app.time_slot === appointment.time_slot
-      ? { ...app, status: 'canceled' }
-      : app
-  );
+    appointment.status = 'canceled';
+    filteredAppointments = filteredAppointments.map(app =>
+      app.date === appointment.date &&
+      app.location === appointment.location &&
+      app.time_slot === appointment.time_slot
+        ? { ...app, status: 'canceled' }
+        : app
+    );
 
-  paginatedAppointments = [...filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)];
-};
-
-
+    paginatedAppointments = [...filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)];
+  };
 
   const filterByStatus = () => {
     filteredAppointments = statusFilter
       ? appointments.filter(app => app.status.toLowerCase() === statusFilter.toLowerCase())
       : [...appointments];
 
-    sortAppointments(sortField); // Ensure sorting is applied after filtering
+    sortAppointments(sortField);
   };
 
-  // Reactive statements
   $: totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   $: paginatedAppointments = filteredAppointments.slice(
     (currentPage - 1) * itemsPerPage,
@@ -123,20 +117,22 @@
         <thead>
           <tr>
             <th on:click={() => sortAppointments('date')}>Date</th>
-            <th on:click={() => sortAppointments('display_name')}>Name</th>
             <th on:click={() => sortAppointments('location')}>Location</th>
             <th on:click={() => sortAppointments('time_slot')}>Time Slot</th>
+            <th on:click={() => sortAppointments('donation_type')}>Donation Type</th>
+            <th on:click={() => sortAppointments('numpax')}>NumPax</th>
             <th on:click={() => sortAppointments('status')}>Status</th>
-            <th on:click={() => sortAppointments('status')}>Cancel</th>
+            <th>Cancel</th>
           </tr>
         </thead>
         <tbody>
           {#each paginatedAppointments as appointment}
             <tr>
               <td>{new Date(appointment.date).toLocaleDateString()}</td>
-              <td>{appointment.display_name}</td>
               <td>{appointment.location}</td>
               <td>{appointment.time_slot}</td>
+              <td>{appointment.donation_type}</td>
+              <td>{appointment.numpax}</td>
               <td class="status-{appointment.status.toLowerCase()}">{appointment.status}</td>
               <td>
                 {#if appointment.status !== 'canceled' && appointment.status !== 'completed'}
@@ -158,6 +154,7 @@
     <button on:click={nextPage} disabled={currentPage === totalPages}>Next</button>
   </div>
 </main>
+
 
 <style>
   h2 {

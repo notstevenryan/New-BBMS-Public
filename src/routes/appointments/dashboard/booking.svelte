@@ -10,9 +10,10 @@
   let selectedDate = '';
   let selectedTime = '';
   let donationType = '';
-  let notes = '';
+  let numpax = '';
   let availableSlots = { Morning: 0, Afternoon: 0, Evening: 0 };
   let datePickerInstance;
+  
 
   const updateLocationDetails = () => {
     const location = locations.find(loc => loc.name === selectedLocation);
@@ -27,27 +28,22 @@
   };
 
   onMount(async () => {
-    // Fetch locations from the database
     locations = await fetchLocations();
 
-    // Automatically set the first location as the selected location
     if (locations.length > 0) {
       selectedLocation = locations[0].name;
-      updateLocationDetails(); // Update details for the first location
+      updateLocationDetails();
     }
 
-    // Initialize the Flatpickr date picker
     datePickerInstance = initializeFlatpickr((selectedDates) => {
       if (selectedDates.length > 0) {
         selectedDate = selectedDates[0];
 
-        // Adjust date for UTC+8
         const adjustedSelectedDate = new Date(selectedDate);
         adjustedSelectedDate.setHours(adjustedSelectedDate.getHours() + 8);
 
         const formattedDate = adjustedSelectedDate.toISOString().split('T')[0];
 
-        // Fetch availability for the selected date
         if (selectedLocation) {
           fetchAvailability(formattedDate, selectedLocation).then(data => {
             availability = data;
@@ -66,16 +62,18 @@
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (donationType === 'group' && !numpax) {
+      alert("Please select the number of people for group donations.");
+      return;
+    }
     const adjusted = adjustedDate(selectedDate);
-
-    await bookAppointment(e, adjusted, selectedLocation, selectedTime, availability, donationType, notes);
-
-    // Reset fields after booking
+    await bookAppointment(e, adjusted, selectedLocation, selectedTime, availability, donationType, numpax);
     selectedDate = '';
     selectedTime = '';
     donationType = '';
-    notes = '';
+    numpax = '2'; // Reset after submission
   };
+
 </script>
 
 <main>
@@ -85,22 +83,20 @@
 
   <form on:submit={handleFormSubmit} class="appointment-form">
     <div class="form-left">
-      <!-- Fixed Location Display -->
       <div class="form-group">
         <label for="location"><b>Location:</b></label>
         <hr class="dashed">
-          {#if locationDetails}
-            <p><b>Name:</b> {locationDetails.name}</p>
-            <p><b>Address:</b> {locationDetails.address}</p>
-            <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
-            <p><b>Email:</b> {locationDetails.email}</p>
-          {:else}
-            <p>Loading location details...</p>
-          {/if}
-          <hr class="dashed">
+        {#if locationDetails}
+          <p><b>Name:</b> {locationDetails.name}</p>
+          <p><b>Address:</b> {locationDetails.address}</p>
+          <p><b>Contact:</b> {locationDetails.contact_numbers}</p>
+          <p><b>Email:</b> {locationDetails.email}</p>
+        {:else}
+          <p>Loading location details...</p>
+        {/if}
+        <hr class="dashed">
       </div>
 
-      <!-- Flatpickr Date Picker -->
       <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
       <div class="form-group" id="date-picker">
         <label for="date"><b>Select Date:</b></label>
@@ -111,7 +107,6 @@
     </div>
 
     <div class="form-right">
-      <!-- Time Window Selection -->
       <div class="form-group">
         <label for="time"><b>Time Slot:</b></label>
         <select id="time" bind:value={selectedTime} disabled={!selectedDate || !selectedLocation}>
@@ -130,32 +125,42 @@
         </select>
       </div>
 
-      <!-- Donation Type Selection -->
       <div class="form-group">
         <label for="donation-type"><b>Donation Type:</b></label>
         <select id="donation-type" bind:value={donationType}>
           <option value="">Select Donation Type</option>
           <option value="individual">Individual</option>
           <option value="group">Group</option>
-          <option value="donation-drive">Donation Drive</option>
         </select>
       </div>
 
-      <!-- Notes Section -->
-      <div class="form-group">
-        <label for="notes"><b>Notes (n/a if none):</b></label>
-        <textarea id="notes" bind:value={notes} placeholder="Add any special instructions or notes..." style="padding: 10px; border-radius: 5px;"></textarea>
+      <div class="form-group" style:display={donationType === 'individual' ? 'block' : 'none'}>
+        <label for="numpax"><b>Num of pax:</b></label>
+        <select id="numpax" bind:value={numpax}>
+          <option value="1">1</option>
+        </select>
       </div>
 
+      <div class="form-group" style:display={donationType === 'group' ? 'block' : 'none'}>
+        <label for="numpax"><b>Num of pax (Up to 4):</b></label>
+        <select id="numpax" bind:value={numpax}>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      
+
       <div class="form-group">
-        <button type="submit" style="border-radius: 5px;" disabled={!selectedTime || !selectedDate}>
+        <button type="submit" style="border-radius: 5px;" 
+          disabled={!selectedTime || !selectedDate || !donationType}>
           Book Appointment
         </button>
       </div>
     </div>
   </form>
 </main>
-  
+
 <style>
   #header {
     position: sticky;
@@ -199,10 +204,9 @@
   button:hover {
     background-color: #0056b3;
   }
-  @media (max-width: 768px) {
-    .appointment-form {
-      flex-direction: column;
+  @media (max-width: 500px) {
+    button {
+      width: 100%;
     }
   }
 </style>
-  

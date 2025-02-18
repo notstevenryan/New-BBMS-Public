@@ -40,7 +40,7 @@ export const fetchAvailability = async (date, location) => {
 };
 
 // Handle appointment booking
-export const bookAppointment = async (e, selectedDate, selectedLocation, selectedTime, availability, donationType, notes) => {
+export const bookAppointment = async (e, selectedDate, selectedLocation, selectedTime, availability, donationType, numpax) => {
   e.preventDefault(); // Prevent default behavior
 
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -83,7 +83,7 @@ export const bookAppointment = async (e, selectedDate, selectedLocation, selecte
         location: selectedLocation,
         time_slot: selectedTime,
         donation_type: donationType,
-        notes: notes || null
+        numpax: numpax || null
       }]);
 
     if (transactionError) {
