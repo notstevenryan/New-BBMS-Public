@@ -49,11 +49,9 @@
           <Contentful />
 
         </div>
- 
     </div>
     <!-- END Contentful news -->
      
-
     <!-- START THE BLOOD BANK LOCATOR -->
     <div class="container-md" 
       id="bloodbank-locator"

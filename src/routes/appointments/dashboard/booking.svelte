@@ -126,9 +126,9 @@
       </div>
 
       <div class="form-group">
-        <label for="donation-type"><b>Donation Type:</b></label>
+        <label for="donation-type"><b>Donor Count:</b></label>
         <select id="donation-type" bind:value={donationType}>
-          <option value="">Select Donation Type</option>
+          <option value="">Select Donor Count</option>
           <option value="individual">Individual</option>
           <option value="group">Group</option>
         </select>
